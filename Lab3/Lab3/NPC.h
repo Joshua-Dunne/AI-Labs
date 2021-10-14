@@ -20,6 +20,9 @@ public:
 protected:
 	void wrapAround();
 	void capVelocity();
+	float getNewOrientation(float t_current, sf::Vector2f t_velocity);
+	float getLength(sf::Vector2f t_velocity) { return sqrt((t_velocity.x * t_velocity.x) + (t_velocity.y * t_velocity.y)); };
+	
 
 	sf::Texture* m_bodyTex;
 	sf::Sprite m_body;
@@ -31,7 +34,7 @@ protected:
 	sf::Vector2f m_velocity;
 
 	float m_rotation = 0.0f;
-	float m_speed = 5.0f;
+	float m_speed = 2.0f;
 	float m_rotationSpeed = 2.0f;
 
 	const sf::Vector2f c_MAX_VELOCITY{ 8.0f, 8.0f };

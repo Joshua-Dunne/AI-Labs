@@ -44,6 +44,17 @@ void NPC::capVelocity()
 		m_velocity.y = -c_MAX_VELOCITY.y;
 }
 
+float NPC::getNewOrientation(float t_current, sf::Vector2f t_velocity)
+{
+	if (getLength(t_velocity) > 0) {
+		// Note atan2 returns an angle in radians which you 
+				// may want to convert to degrees.
+		return atan2(-m_position.x, m_position.y);
+	}
+	else
+		return t_current;
+}
+
 void NPC::initialize(sf::Texture* t_tex)
 {
 	m_bodyTex = t_tex;

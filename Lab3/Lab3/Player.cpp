@@ -13,8 +13,8 @@ Player::Player(sf::Vector2f t_pos) : m_position(t_pos)
 	m_body.setScale(sf::Vector2f{ 0.15f, 0.15f });
 	m_body.setRotation(m_rotation);
 
-	m_heading.x = cos((3.14159 / 180.0f) * m_rotation);
-	m_heading.y = sin((3.14159 / 180.0f) * m_rotation);
+	m_heading.x = static_cast<float>(cos((3.14159 / 180.0f) * m_rotation));
+	m_heading.y = static_cast<float>(sin((3.14159 / 180.0f) * m_rotation));
 }
 
 void Player::update(sf::Time& dt)
@@ -47,16 +47,16 @@ void Player::handleInput(sf::Time& dt)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		m_rotation += -m_rotationSpeed;
-		m_heading.x = cos((3.14159 / 180.0f) * m_rotation);
-		m_heading.y = sin((3.14159 / 180.0f) * m_rotation);
+		m_heading.x = static_cast<float>(cos((3.14159 / 180.0f) * m_rotation));
+		m_heading.y = static_cast<float>(sin((3.14159 / 180.0f) * m_rotation));
 		m_body.setRotation(m_rotation);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		m_rotation += m_rotationSpeed;
-		m_heading.x = cos((3.14159 / 180.0f) * m_rotation);
-		m_heading.y = sin((3.14159 / 180.0f) * m_rotation);
+		m_heading.x = static_cast<float>(cos((3.14159 / 180.0f) * m_rotation));
+		m_heading.y = static_cast<float>(sin((3.14159 / 180.0f) * m_rotation));
 		m_body.setRotation(m_rotation);
 	}
 }

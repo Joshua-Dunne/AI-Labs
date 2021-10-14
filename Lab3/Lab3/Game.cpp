@@ -12,15 +12,18 @@ Game::Game() :	m_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Lab1")
 	}
 
 	m_player = new Player(sf::Vector2f{ 200.0f, 300.0f });
-	m_basicAI = new BasicAI(sf::Vector2f{ 600.0f, 300.0f });
+	//m_basicAI = new BasicAI(sf::Vector2f{ 600.0f, 300.0f });
+	m_wanderAI = new WanderAI(sf::Vector2f{ 600.0f, 300.0f });
 
-	m_basicAI->initialize(m_tex);
+	//m_basicAI->initialize(m_tex);
+	m_wanderAI->initialize(m_tex);
 }
 
 Game::~Game()
 {
 	delete(m_player);
-	delete(m_basicAI);
+	//delete(m_basicAI);
+	delete(m_wanderAI);
 }
 
 /// <summary>
@@ -63,10 +66,10 @@ void Game::processInput()
 		{
 			if (event.key.code == sf::Keyboard::Num7)
 			{
-				if (m_basicAI->active())
-					m_basicAI->setActive(false);
+				if (m_wanderAI->active())
+					m_wanderAI->setActive(false);
 				else
-					m_basicAI->setActive(true);
+					m_wanderAI->setActive(true);
 			}
 			
 		}
@@ -77,7 +80,7 @@ void Game::update(sf::Time& dt)
 {
 	// Update elements
 	m_player->update(dt);
-	m_basicAI->update(dt);
+	m_wanderAI->update(dt);
 }
 
 void Game::render()
@@ -86,7 +89,7 @@ void Game::render()
 
 	// Draw elements
 	m_player->render(m_window);
-	m_basicAI->render(m_window);
+	m_wanderAI->render(m_window);
 
 	m_window.display();
 }
