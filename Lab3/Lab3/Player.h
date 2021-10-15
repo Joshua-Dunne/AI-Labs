@@ -15,6 +15,7 @@ public:
 	void render(sf::RenderWindow& t_window);
 
 	sf::Vector2f m_position;
+	sf::Vector2f m_velocity;
 
 private:
 	void handleInput(sf::Time& dt);
@@ -25,7 +26,6 @@ private:
 	sf::Sprite m_body;
 	
 	sf::Vector2f m_heading;
-	sf::Vector2f m_velocity;
 
 	float m_rotation = 0.0f;
 	float m_speed = 5.0f;

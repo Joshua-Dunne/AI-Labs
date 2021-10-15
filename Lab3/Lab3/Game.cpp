@@ -15,6 +15,7 @@ Game::Game() :	m_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Lab1")
 	m_seekAI = new SeekAI(sf::Vector2f{ 600.0f, 300.0f });
 	m_arriveAI = new ArriveAI(sf::Vector2f{ 600.0f, 300.0f });
 	m_slowArriveAI = new ArriveAI(sf::Vector2f{ 600.0f, 400.0f });
+	m_persueAI = new PersueAI(sf::Vector2f{ 700.0f, 400.0f });
 
 	m_seekAI->initialize(m_tex);
 
@@ -37,6 +38,16 @@ Game::Game() :	m_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Lab1")
 	m_slowArriveAI->initialize(m_tex);
 	m_slowArriveAI->m_maxSpeed = 0.25f;
 	m_slowArriveAI->m_name.setString("Slow Arrive");
+
+	m_tex = new sf::Texture;
+
+	if (!m_tex->loadFromFile("resources/sprites/npc4.png"))
+	{
+		throw std::exception("Error loading NPC4 sprite!");
+	}
+
+	m_persueAI->initialize(m_tex);
+	m_persueAI->m_name.setString("Persue");
 }
 
 Game::~Game()
@@ -45,6 +56,7 @@ Game::~Game()
 	delete(m_seekAI);
 	delete(m_arriveAI);
 	delete(m_slowArriveAI);
+	delete(m_persueAI);
 }
 
 /// <summary>
@@ -108,6 +120,14 @@ void Game::processInput()
 				else
 					m_slowArriveAI->setActive(true);
 			}
+
+			if (event.key.code == sf::Keyboard::Num4)
+			{
+				if (m_persueAI->active())
+					m_persueAI->setActive(false);
+				else
+					m_persueAI->setActive(true);
+			}
 			
 		}
 	}
@@ -126,6 +146,10 @@ void Game::update(sf::Time& dt)
 
 	m_slowArriveAI->m_target = m_player->m_position;
 	m_slowArriveAI->update(dt);
+
+	m_persueAI->m_target = m_player->m_position;
+	m_persueAI->m_targetVelocity = m_player->m_velocity;
+	m_persueAI->update(dt);
 }
 
 void Game::render()
@@ -137,6 +161,7 @@ void Game::render()
 	m_seekAI->render(m_window);
 	m_arriveAI->render(m_window);
 	m_slowArriveAI->render(m_window);
+	m_persueAI->render(m_window);
 
 	m_window.display();
 }
