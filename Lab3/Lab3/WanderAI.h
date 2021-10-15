@@ -10,14 +10,16 @@ public:
     // Inherited via NPC
     virtual void update(sf::Time& dt) override;
 
-    float m_maxSpeed = 0.5f;
+    float m_maxSpeed = 0.25f;
     float m_maxAcceleration = 20.0f;
 
 private:
     SteeringOutput getSteering();
     SteeringOutput getArrival(sf::Vector2f t_pos);
 
-    float m_wanderOffset = 4.0f;
+    SteeringOutput steering;
+
+    float m_wanderOffset = 20.0f;
     float m_wanderRate = 5.0f;
     float m_wanderRadius = 20.0f;
     float m_wanderOrientation = 0.0f;

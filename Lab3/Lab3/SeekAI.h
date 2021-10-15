@@ -9,8 +9,6 @@ public:
 
     // Inherited via NPC
     virtual void update(sf::Time& dt) override;
-    
-    sf::Vector2f m_target;
 
 private:
     SteeringOutput getSteering();

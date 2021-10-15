@@ -10,7 +10,6 @@ public:
     // Inherited via NPC
     virtual void update(sf::Time& dt) override;
 
-    sf::Vector2f m_target;
     float m_maxSpeed = 0.5f;
     float m_maxAcceleration = 20.0f;
 

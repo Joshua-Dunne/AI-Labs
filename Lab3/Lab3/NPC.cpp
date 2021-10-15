@@ -13,6 +13,9 @@ void NPC::render(sf::RenderWindow& t_window)
 	if (m_isActive)
 	{
 		t_window.draw(m_body);
+
+		drawVisionCone(t_window);
+
 		t_window.draw(m_name);
 	}
 		
@@ -61,6 +64,11 @@ float NPC::getNewOrientation(float t_current, sf::Vector2f t_velocity)
 	}
 	else
 		return t_current;
+}
+
+void NPC::drawVisionCone(sf::RenderWindow& t_window)
+{
+	points[0].position = m_position;
 }
 
 void NPC::initialize(sf::Texture* t_tex)

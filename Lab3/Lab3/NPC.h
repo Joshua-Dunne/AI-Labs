@@ -20,14 +20,23 @@ public:
 
 	sf::Text m_name;
 
+	sf::Vector2f m_target;
+
 protected:
 	void wrapAround();
 	void capVelocity();
 	float getNewOrientation(float t_current, sf::Vector2f t_velocity);
 	float getLength(sf::Vector2f t_velocity) { return sqrt((t_velocity.x * t_velocity.x) + (t_velocity.y * t_velocity.y)); };
 	sf::Vector2f normalize(sf::Vector2f t_vector) { return t_vector / getLength(t_vector); };
-	float getRotation(sf::Vector2f t_heading) {return atan2(t_heading.y, t_heading.x) * 180.0f / 3.14159f;}
-	
+	float getRotation(sf::Vector2f t_heading) { return atan2(t_heading.y, t_heading.x) * 180.0f / 3.14159f; }
+	void drawVisionCone(sf::RenderWindow& t_window);
+
+	sf::VertexArray vision{ sf::Triangles, 3 };
+	sf::Vertex points[3] = { 
+		sf::Vertex{sf::Vector2f{0.0f, 0.0f}, sf::Color::Green}, 
+		sf::Vertex{sf::Vector2f{0.0f, 0.0f}, sf::Color::Transparent}, 
+		sf::Vertex{sf::Vector2f{0.0f, 0.0f}, sf::Color::Transparent} };
+
 
 	sf::Texture* m_bodyTex;
 	sf::Sprite m_body;

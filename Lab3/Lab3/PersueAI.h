@@ -9,7 +9,7 @@ public:
     PersueAI(sf::Vector2f t_pos);
     // Inherited via NPC
     virtual void update(sf::Time& dt) override;
-    sf::Vector2f m_target;
+
     sf::Vector2f m_targetVelocity;
     float m_maxSpeed = 0.5f;
     float m_maxAcceleration = 20.0f;
