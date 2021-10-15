@@ -63,22 +63,22 @@ void Player::handleInput(sf::Time& dt)
 
 void Player::wrapAround()
 {
-	if (m_position.x > 800.0 + m_body.getGlobalBounds().width)
+	if (m_position.x > SCREEN_WIDTH + m_body.getGlobalBounds().width)
 	{
 		m_position = sf::Vector2f{ -m_body.getGlobalBounds().width, m_position.y };
 	}
 	else if (m_position.x < -m_body.getGlobalBounds().width)
 	{
-		m_position = sf::Vector2f{ 800.0f + m_body.getGlobalBounds().width, m_position.y };
+		m_position = sf::Vector2f{ SCREEN_WIDTH + m_body.getGlobalBounds().width, m_position.y };
 	}
 
-	if (m_position.y > 600.0 + m_body.getGlobalBounds().height)
+	if (m_position.y > SCREEN_HEIGHT + m_body.getGlobalBounds().height)
 	{
 		m_position = sf::Vector2f{ m_position.x, -m_body.getGlobalBounds().height };
 	}
 	else if (m_position.y < -m_body.getGlobalBounds().height)
 	{
-		m_position = sf::Vector2f{ m_position.x, 600.0f + m_body.getGlobalBounds().height };
+		m_position = sf::Vector2f{ m_position.x, SCREEN_HEIGHT + m_body.getGlobalBounds().height };
 	}
 }
 

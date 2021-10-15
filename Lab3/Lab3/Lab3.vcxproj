@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ArriveAI.h" />
     <ClInclude Include="BasicAI.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="globals.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="WanderAI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArriveAI.cpp" />
     <ClCompile Include="BasicAI.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />

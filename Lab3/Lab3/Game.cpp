@@ -12,19 +12,39 @@ Game::Game() :	m_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Lab1")
 	}
 
 	m_player = new Player(sf::Vector2f{ 200.0f, 300.0f });
-	//m_basicAI = new BasicAI(sf::Vector2f{ 600.0f, 300.0f });
 	m_seekAI = new SeekAI(sf::Vector2f{ 600.0f, 300.0f });
+	m_arriveAI = new ArriveAI(sf::Vector2f{ 600.0f, 300.0f });
+	m_slowArriveAI = new ArriveAI(sf::Vector2f{ 600.0f, 400.0f });
 
-	//m_basicAI->initialize(m_tex);
 	m_seekAI->initialize(m_tex);
+
+	m_tex = new sf::Texture;
+
+	if (!m_tex->loadFromFile("resources/sprites/npc2.png"))
+	{
+		throw std::exception("Error loading NPC2 sprite!");
+	}
+
+	m_arriveAI->initialize(m_tex);
+
+	m_tex = new sf::Texture;
+
+	if (!m_tex->loadFromFile("resources/sprites/npc3.png"))
+	{
+		throw std::exception("Error loading NPC3 sprite!");
+	}
+
+	m_slowArriveAI->initialize(m_tex);
+	m_slowArriveAI->m_maxSpeed = 0.25f;
+	m_slowArriveAI->m_name.setString("Slow Arrive");
 }
 
 Game::~Game()
 {
 	delete(m_player);
-	//delete(m_basicAI);
-	//delete (m_wanderAI);
 	delete(m_seekAI);
+	delete(m_arriveAI);
+	delete(m_slowArriveAI);
 }
 
 /// <summary>
@@ -65,12 +85,28 @@ void Game::processInput()
 
 		if (event.type == sf::Event::KeyPressed)
 		{
-			if (event.key.code == sf::Keyboard::Num7)
+			if (event.key.code == sf::Keyboard::Num1)
 			{
 				if (m_seekAI->active())
 					m_seekAI->setActive(false);
 				else
 					m_seekAI->setActive(true);
+			}
+
+			if (event.key.code == sf::Keyboard::Num2)
+			{
+				if (m_arriveAI->active())
+					m_arriveAI->setActive(false);
+				else
+					m_arriveAI->setActive(true);
+			}
+
+			if (event.key.code == sf::Keyboard::Num3)
+			{
+				if (m_slowArriveAI->active())
+					m_slowArriveAI->setActive(false);
+				else
+					m_slowArriveAI->setActive(true);
 			}
 			
 		}
@@ -84,6 +120,12 @@ void Game::update(sf::Time& dt)
 
 	m_seekAI->m_target = m_player->m_position;
 	m_seekAI->update(dt);
+	
+	m_arriveAI->m_target = m_player->m_position;
+	m_arriveAI->update(dt);
+
+	m_slowArriveAI->m_target = m_player->m_position;
+	m_slowArriveAI->update(dt);
 }
 
 void Game::render()
@@ -93,6 +135,8 @@ void Game::render()
 	// Draw elements
 	m_player->render(m_window);
 	m_seekAI->render(m_window);
+	m_arriveAI->render(m_window);
+	m_slowArriveAI->render(m_window);
 
 	m_window.display();
 }

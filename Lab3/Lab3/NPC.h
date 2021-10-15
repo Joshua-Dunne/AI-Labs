@@ -18,6 +18,8 @@ public:
 	inline void setActive(bool t_active) { m_isActive = t_active; };
 	inline bool active() { return m_isActive; };
 
+	sf::Text m_name;
+
 protected:
 	void wrapAround();
 	void capVelocity();
@@ -43,7 +45,6 @@ protected:
 	const sf::Vector2f c_MAX_VELOCITY{ 8.0f, 8.0f };
 
 	sf::Font m_font;
-	sf::Text m_name;
 };
 
 #endif

@@ -4,9 +4,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "BasicAI.h"
 #include "SeekAI.h"
-#include "WanderAI.h"
+#include "ArriveAI.h"
 #include "globals.h"
 
 class Game
@@ -19,9 +18,9 @@ private:
 	sf::Clock m_updateClock;
 
 	Player* m_player;
-	//BasicAI* m_basicAI;
-	//WanderAI* m_wanderAI;
 	SeekAI* m_seekAI;
+	ArriveAI* m_arriveAI;
+	ArriveAI* m_slowArriveAI;
 
 	sf::Texture* m_tex;
 
