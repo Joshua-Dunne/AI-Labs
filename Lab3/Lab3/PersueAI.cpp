@@ -12,6 +12,7 @@ void PersueAI::update(sf::Time& dt)
 	{
 		SteeringOutput steering = getSteering();
 		m_position += steering.linear;
+		m_rotation = steering.rotation;
 
 		wrapAround();
 

@@ -12,6 +12,8 @@ void ArriveAI::update(sf::Time& dt)
 	{
 		SteeringOutput steering = getSteering();
 		m_position += steering.linear;
+		m_rotation = steering.rotation;
+
 		m_body.setPosition(m_position);
 		m_body.setRotation(steering.rotation);
 

@@ -177,12 +177,13 @@ void Game::render()
 	m_window.clear(sf::Color::Black);
 
 	// Draw elements
-	m_player->render(m_window);
 	m_seekAI->render(m_window);
 	m_arriveAI->render(m_window);
 	m_slowArriveAI->render(m_window);
 	m_persueAI->render(m_window);
 	m_wanderAI->render(m_window);
+
+	m_player->render(m_window);
 
 	m_window.display();
 }

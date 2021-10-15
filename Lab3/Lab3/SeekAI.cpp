@@ -11,6 +11,7 @@ void SeekAI::update(sf::Time& dt)
 	SteeringOutput steering = getSteering();
 	m_position = m_position + steering.linear;
 	m_rotation = steering.rotation;
+
 	m_body.setPosition(m_position);
 	m_body.setRotation(m_rotation);
 	m_name.setPosition(m_position - sf::Vector2f{m_name.getGlobalBounds().width / 2.0f, 75.0f});

@@ -68,7 +68,31 @@ float NPC::getNewOrientation(float t_current, sf::Vector2f t_velocity)
 
 void NPC::drawVisionCone(sf::RenderWindow& t_window)
 {
-	points[0].position = m_position;
+	m_vision[0] = sf::Vertex(sf::Vector2f(), sf::Color::Red);
+	m_vision[1] = sf::Vertex(sf::Vector2f(), sf::Color::Transparent);
+	m_vision[2] = sf::Vertex(sf::Vector2f(), sf::Color::Transparent);
+
+	float radians = (m_visionAngle / 2.0f) * (3.14159f / 180.0f);
+	float rotationRadians = m_rotation * (3.14159f / 180.0f);
+
+	m_vision[0].position = m_position;
+	m_vision[1].position = m_position + sf::Vector2f{ cos((rotationRadians - radians / 2.0f)), sin((rotationRadians - radians / 2.0f)) } * m_visionRange;
+	m_vision[2].position = m_position + sf::Vector2f{ cos((rotationRadians + radians / 2.0f)), sin((rotationRadians + radians / 2.0f)) } * m_visionRange;
+
+	if (isLeft(m_vision[0].position, m_vision[1].position, m_target))
+	{
+		if (!isLeft(m_vision[0].position, m_vision[2].position, m_target))
+		{
+			float distance = getLength(m_position - m_target);
+			
+			if (distance < m_visionRange)
+			{
+				m_vision[0].color = sf::Color::Green;
+			}
+		}
+	}
+
+	t_window.draw(m_vision);
 }
 
 void NPC::initialize(sf::Texture* t_tex)
