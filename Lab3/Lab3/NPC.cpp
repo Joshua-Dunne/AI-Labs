@@ -2,12 +2,20 @@
 
 NPC::NPC(sf::Vector2f t_pos) : m_position(t_pos), m_bodyTex(nullptr)
 {
+	if (!m_font.loadFromFile("resources/fonts/arial.ttf"))
+	{
+		throw std::exception("Unable to load arial.ttf in NPC!");
+	}
 }
 
 void NPC::render(sf::RenderWindow& t_window)
 {
-	if(m_isActive)
+	if (m_isActive)
+	{
 		t_window.draw(m_body);
+		t_window.draw(m_name);
+	}
+		
 }
 
 void NPC::wrapAround()

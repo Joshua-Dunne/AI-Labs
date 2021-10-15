@@ -11,9 +11,18 @@ public:
     virtual void update(sf::Time& dt) override;
 
 private:
-    float m_orientation = m_rotation;
-    float m_targetDistance = 3.0f;
-    float m_maxRotation = 3.0f;
+    SteeringOutput getSteering();
+
+    float m_wanderOffset = 4.0f; //  --how far in front we aim
+    float m_wanderRadius = 10.0f; // --radius of target circle
+    float m_wanderRate = 2.0f; // --how fast we can turn
+    float m_maxAcc = 5.0f; // --maximum acceleration
+    float m_wanderOrientation; // --orientation of target
+    float m_orientation;
+
+    SteeringOutput m_steering;
+
+    sf::Vector2f m_target;
 };
 
 #endif

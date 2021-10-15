@@ -13,6 +13,8 @@ public:
 	void update(sf::Time& dt);
 	void render(sf::RenderWindow& t_window);
 
+	sf::Vector2f m_position;
+
 private:
 	void handleInput(sf::Time& dt);
 	void wrapAround();
@@ -20,8 +22,7 @@ private:
 
 	sf::Texture m_bodyTex;
 	sf::Sprite m_body;
-
-	sf::Vector2f m_position;
+	
 	sf::Vector2f m_heading;
 	sf::Vector2f m_velocity;
 

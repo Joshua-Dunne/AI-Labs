@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "SteeringOutput.h"
 #include "globals.h"
 
 class NPC
@@ -22,6 +23,8 @@ protected:
 	void capVelocity();
 	float getNewOrientation(float t_current, sf::Vector2f t_velocity);
 	float getLength(sf::Vector2f t_velocity) { return sqrt((t_velocity.x * t_velocity.x) + (t_velocity.y * t_velocity.y)); };
+	sf::Vector2f normalize(sf::Vector2f t_vector) { return t_vector / getLength(t_vector); };
+	float getRotation(sf::Vector2f t_heading) {return atan2(t_heading.y, t_heading.x) * 180.0f / 3.14159f;}
 	
 
 	sf::Texture* m_bodyTex;
@@ -38,6 +41,9 @@ protected:
 	float m_rotationSpeed = 2.0f;
 
 	const sf::Vector2f c_MAX_VELOCITY{ 8.0f, 8.0f };
+
+	sf::Font m_font;
+	sf::Text m_name;
 };
 
 #endif

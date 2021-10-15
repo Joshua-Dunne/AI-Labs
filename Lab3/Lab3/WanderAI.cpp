@@ -6,24 +6,24 @@ WanderAI::WanderAI(sf::Vector2f t_pos) : NPC(t_pos)
 
 void WanderAI::update(sf::Time& dt)
 {
-	// calculate target in front of ai
-	sf::Vector2f target = sf::Vector2f{ 400.0f, -100.0f };
-	m_velocity = target - m_position;
-	m_velocity /= getLength(m_velocity); // normalize vector
-	m_orientation = getNewOrientation(m_orientation, m_velocity);
+	
+}
 
+SteeringOutput WanderAI::getSteering()
+{
+	SteeringOutput steering;
 	int random = rand() % 2;
-	if (random == 0)
-		random--;
+	if (random == 0) random = -1;
 
-	m_rotation += m_maxRotation * static_cast<float>(random);
-	m_velocity.x = -sin(m_orientation) * m_speed;
-	m_velocity.y = cos(m_orientation) * m_speed;
+	m_wanderOrientation += random * m_wanderRate;
+	float m_targetOrientation = m_orientation + m_wanderOrientation;
+	// Get the centre of the wander circle
+	m_target = m_position + m_wanderOffset * sf::Vector2f(m_orientation, m_orientation);
+	m_target += m_wanderRadius * sf::Vector2f(m_targetOrientation, m_targetOrientation);
+	//m_steering = face.getSteering(m_target);
+	//Full acceleration in direction we are facing
+	m_steering.linear = m_maxAcc * sf::Vector2f(m_orientation, m_orientation);
 
-	m_position += m_velocity;
+	return steering;
 
-	wrapAround();
-
-	m_body.setPosition(m_position);
-	m_body.setRotation(m_rotation);
 }

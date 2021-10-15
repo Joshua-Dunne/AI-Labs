@@ -33,6 +33,12 @@
     <ClInclude Include="WanderAI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SteeringOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SeekAI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WanderAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SeekAI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

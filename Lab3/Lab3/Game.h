@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "Player.h"
 #include "BasicAI.h"
+#include "SeekAI.h"
 #include "WanderAI.h"
 #include "globals.h"
 
@@ -19,7 +20,8 @@ private:
 
 	Player* m_player;
 	//BasicAI* m_basicAI;
-	WanderAI* m_wanderAI;
+	//WanderAI* m_wanderAI;
+	SeekAI* m_seekAI;
 
 	sf::Texture* m_tex;
 
