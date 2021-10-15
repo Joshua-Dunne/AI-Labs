@@ -47,7 +47,6 @@ Game::Game() :	m_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Lab1")
 	}
 
 	m_persueAI->initialize(m_tex);
-	m_persueAI->m_name.setString("Persue");
 }
 
 Game::~Game()

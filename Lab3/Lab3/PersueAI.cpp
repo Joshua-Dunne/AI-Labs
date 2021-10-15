@@ -2,6 +2,8 @@
 
 PersueAI::PersueAI(sf::Vector2f t_pos) : NPC(t_pos)
 {
+	m_name.setFont(m_font);
+	m_name.setString("Persue");
 }
 
 void PersueAI::update(sf::Time& dt)
