@@ -10,19 +10,21 @@ public:
     // Inherited via NPC
     virtual void update(sf::Time& dt) override;
 
+    float m_maxSpeed = 0.5f;
+    float m_maxAcceleration = 20.0f;
+
 private:
     SteeringOutput getSteering();
+    SteeringOutput getArrival(sf::Vector2f t_pos);
 
-    float m_wanderOffset = 4.0f; //  --how far in front we aim
-    float m_wanderRadius = 10.0f; // --radius of target circle
-    float m_wanderRate = 2.0f; // --how fast we can turn
-    float m_maxAcc = 5.0f; // --maximum acceleration
-    float m_wanderOrientation; // --orientation of target
-    float m_orientation;
+    float m_wanderOffset = 4.0f;
+    float m_wanderRate = 5.0f;
+    float m_wanderRadius = 20.0f;
+    float m_wanderOrientation = 0.0f;
 
-    SteeringOutput m_steering;
-
-    sf::Vector2f m_target;
+    float m_arrivalRadius = 10.0f;
+    float m_slowRadius = 200.0f;
+    float m_timeToTarget = 0.0f;
 };
 
 #endif

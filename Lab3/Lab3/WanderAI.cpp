@@ -2,28 +2,71 @@
 
 WanderAI::WanderAI(sf::Vector2f t_pos) : NPC(t_pos)
 {
+	m_name.setFont(m_font);
+	m_name.setString("Wander");
 }
 
 void WanderAI::update(sf::Time& dt)
 {
-	
+	SteeringOutput steering = getSteering();
+	m_position = m_position + steering.linear;
+	m_rotation = steering.rotation;
+
+	std::cout << "Wander Pos: " << m_position.x << ", " << m_position.y << std::endl;
+
+	wrapAround();
+
+	m_body.setPosition(m_position);
+	m_body.setRotation(m_rotation);
+	m_name.setPosition(m_position - sf::Vector2f{ m_name.getGlobalBounds().width / 2.0f, 75.0f });
 }
 
 SteeringOutput WanderAI::getSteering()
 {
-	SteeringOutput steering;
-	int random = rand() % 2;
-	if (random == 0) random = -1;
+	
+	
+	return getArrival(target);
+}
 
-	m_wanderOrientation += random * m_wanderRate;
-	float m_targetOrientation = m_orientation + m_wanderOrientation;
-	// Get the centre of the wander circle
-	m_target = m_position + m_wanderOffset * sf::Vector2f(m_orientation, m_orientation);
-	m_target += m_wanderRadius * sf::Vector2f(m_targetOrientation, m_targetOrientation);
-	//m_steering = face.getSteering(m_target);
-	//Full acceleration in direction we are facing
-	m_steering.linear = m_maxAcc * sf::Vector2f(m_orientation, m_orientation);
+SteeringOutput WanderAI::getArrival(sf::Vector2f t_pos)
+{
+	SteeringOutput steering;
+
+	sf::Vector2f direction = t_pos - m_position;
+	float distance = getLength(direction);
+
+	float targetSpeed = 0;
+
+	//Set the speed
+	if (distance < m_arrivalRadius) targetSpeed = 0;
+
+	else if (distance > m_slowRadius)
+	{
+		targetSpeed = m_maxSpeed;
+	}
+	else
+	{
+		targetSpeed = m_maxSpeed * (distance / m_slowRadius);
+	}
+
+	//Now set the velocity (speed and direction)
+	sf::Vector2f targetVelocity = direction;
+	targetVelocity = normalize(targetVelocity);
+	targetVelocity = targetVelocity * targetSpeed;
+	m_timeToTarget = 0.1f;
+
+	steering.linear = targetVelocity - m_velocity;
+	steering.linear = steering.linear / m_timeToTarget;
+
+	//Are we going too fast?
+	if (getLength(steering.linear) > m_maxAcceleration)
+	{
+		steering.linear = normalize(steering.linear);
+		steering.linear = steering.linear * m_maxAcceleration;
+		steering.angular = sf::Vector2f{ 0.0f, 0.0f };
+	}
+
+	steering.rotation = getRotation(normalize(direction));
 
 	return steering;
-
 }

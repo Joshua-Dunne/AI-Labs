@@ -7,6 +7,7 @@
 #include "SeekAI.h"
 #include "ArriveAI.h"
 #include "PersueAI.h"
+#include "WanderAI.h"
 #include "globals.h"
 
 class Game
@@ -23,6 +24,7 @@ private:
 	ArriveAI* m_arriveAI;
 	ArriveAI* m_slowArriveAI;
 	PersueAI* m_persueAI;
+	WanderAI* m_wanderAI;
 
 	sf::Texture* m_tex;
 
