@@ -41,6 +41,7 @@ private:
 	bool m_exitGame; // control exiting game
 
 	const int c_NUM_OF_BOIDS = 100;
+	sf::CircleShape mainShape{ 8,3 };
 
 	float boidsSize = 3;
 	float enemySize = 10;
@@ -49,7 +50,6 @@ private:
 
 	//Create flock, vector of shapes, and initialize boids
 	Flock flock;
-	vector<sf::CircleShape> shapes;
 
 };
 

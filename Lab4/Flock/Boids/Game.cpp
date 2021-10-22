@@ -37,22 +37,18 @@ Game::Game()
 	for (int i = 0; i < c_NUM_OF_BOIDS; i++) //Number of boids is hardcoded for testing pusposes.
 	{
 		//Boid b(rand() % window_width, rand() % window_height); //Starts the boid with a random position in the window.
-		Boid b(window_width / 3, window_height / 3); //Starts all boids in the center of the screen
-		sf::CircleShape shape(8, 3); //Shape with a radius of 10 and 3 points (Making it a triangle)
-
-		//Changing the Visual Properties of the shape
-		//shape.setPosition(b.location.x, b.location.y); //Sets position of shape to random location that boid was set to.
-		shape.setPosition(window_width, window_height); //Testing purposes, starts all shapes in the center of screen.
-		shape.setOutlineColor(sf::Color(0, 255, 0));
-		shape.setFillColor(sf::Color::Green);
-		shape.setOutlineColor(sf::Color::White);
-		shape.setOutlineThickness(1);
-		shape.setRadius(boidsSize);
+		Boid* b = new Boid(window_width / 3, window_height / 3, false); //Starts all boids in the center of the screen
 
 		//Adding the boid to the flock and adding the shapes to the vector<sf::CircleShape>
 		flock.addBoid(b);
-		shapes.push_back(shape);
 	}
+
+	mainShape.setPosition(window_width, window_height); //Testing purposes, starts all shapes in the center of screen.
+	mainShape.setOutlineColor(sf::Color(0, 255, 0));
+	mainShape.setFillColor(sf::Color::Green);
+	mainShape.setOutlineColor(sf::Color::White);
+	mainShape.setOutlineThickness(1);
+	mainShape.setRadius(boidsSize);
 
 }
 
@@ -145,21 +141,10 @@ void Game::processMouse(sf::Event t_event)
 	{
 		//Gets mouse coordinates, sets that as the location of the boid and the shape
 		sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
-		Boid b(mouseCoords.x, mouseCoords.y, true);
-		sf::CircleShape shape(10, 3);
-
-		//Changing visual properties of newly created boid
-		shape.setPosition(mouseCoords.x, mouseCoords.y);
-		shape.setOutlineColor(sf::Color(255, 0, 0));
-		shape.setFillColor(sf::Color(255, 0, 0));
-		shape.setOutlineColor(sf::Color::White);
-		shape.setOutlineThickness(1);
-		shape.setRadius(enemySize);
+		Boid* b = new Boid(mouseCoords.x, mouseCoords.y, true);
 
 		//Adds newly created boid and shape to their respective data structure
 		flock.addBoid(b);
-		shapes.push_back(shape);
-		// New Shape is drawn on next render loop
 	}
 
 }
@@ -170,28 +155,6 @@ void Game::processMouse(sf::Event t_event)
 /// <param name="t_deltaTime">time interval per frame</param>
 void Game::update(sf::Time t_deltaTime)
 {
-	//Clears previous frames of visualization to not have clutter. (And simulate animation)
-	m_window.clear();
-
-	//Draws all of the Boids out, and applies functions that are needed to update.
-	for (int i = 0; i < shapes.size(); i++)
-	{
-		m_window.draw(shapes[i]);
-
-		//Cout's removed due to slowdown and only needed for testing purposes
-		//cout << "Boid "<< i <<" Coordinates: (" << shapes[i].getPosition().x << ", " << shapes[i].getPosition().y << ")" << endl;
-		//cout << "Boid Code " << i << " Location: (" << flock.getBoid(i).location.x << ", " << flock.getBoid(i).location.y << ")" << endl;
-
-		//Matches up the location of the shape to the boid
-		shapes[i].setPosition(flock.getBoid(i).location.x, flock.getBoid(i).location.y);
-
-		// Calculates the angle where the velocity is pointing so that the triangle turns towards it.
-		float theta;
-		theta = flock.getBoid(i).angle(flock.getBoid(i).velocity);
-		shapes[i].setRotation(theta);
-
-	}
-
 	//Applies the three rules to each boid in the flock and changes them accordingly.
 	if (action == "flock")
 		flock.flocking();
@@ -212,7 +175,48 @@ void Game::update(sf::Time t_deltaTime)
 /// </summary>
 void Game::render()
 {
-//	m_window.clear(sf::Color::Black);
+	//Clears previous frames of visualization to not have clutter. (And simulate animation)
+	m_window.clear();
+
 	m_window.draw(m_actionMessage);
+
+	//Draws all of the Boids out, and applies functions that are needed to update.
+	for (int i = 0; i < flock.getSize(); i++)
+	{
+		Boid* curBoid = flock.getBoid(i);
+
+		//Cout's removed due to slowdown and only needed for testing purposes
+		//cout << "Boid "<< i <<" Coordinates: (" << shapes[i].getPosition().x << ", " << shapes[i].getPosition().y << ")" << endl;
+		//cout << "Boid Code " << i << " Location: (" << flock.getBoid(i).location.x << ", " << flock.getBoid(i).location.y << ")" << endl;
+
+		//Matches up the location of the shape to the boid
+		mainShape.setPosition(curBoid->location.x, curBoid->location.y);
+
+		// Calculates the angle where the velocity is pointing so that the triangle turns towards it.
+		float theta;
+		theta = curBoid->angle(curBoid->velocity);
+		mainShape.setRotation(theta);
+
+		if (curBoid->predator)
+		{
+			mainShape.setOutlineColor(sf::Color(255, 0, 0));
+			mainShape.setFillColor(sf::Color(255, 0, 0));
+			mainShape.setOutlineColor(sf::Color::White);
+			mainShape.setOutlineThickness(1);
+			mainShape.setRadius(enemySize);
+		}
+		else
+		{
+			mainShape.setOutlineColor(sf::Color(0, 255, 0));
+			mainShape.setFillColor(sf::Color::Green);
+			mainShape.setOutlineColor(sf::Color::White);
+			mainShape.setOutlineThickness(1);
+			mainShape.setRadius(boidsSize);
+		}
+
+		m_window.draw(mainShape);
+
+	}
+
 	m_window.display();
 }

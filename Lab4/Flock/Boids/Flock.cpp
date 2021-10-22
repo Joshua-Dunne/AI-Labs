@@ -12,12 +12,12 @@ int Flock::getSize()
 	return flock.size();
 }
 
-Boid Flock::getBoid(int i)
+Boid* Flock::getBoid(int i)
 {
 	return flock[i];
 }
 
-void Flock::addBoid(Boid b)
+void Flock::addBoid(Boid* b)
 {
 	flock.push_back(b);
 }
@@ -28,7 +28,7 @@ void Flock::flocking()
 {
 	for (int i = 0; i < flock.size(); i++)
 	{
-		flock[i].run(flock);
+		flock[i]->run(flock);
 	}
 }
 // Runs the swarm function for every boid in the flock checking against the flock
@@ -37,6 +37,6 @@ void Flock::swarming()
 {
 	for (int i = 0; i < flock.size(); i++)
 	{
-		flock[i].swarm(flock);
+		flock[i]->swarm(flock);
 	}
 }

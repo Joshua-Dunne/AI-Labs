@@ -20,7 +20,7 @@ private:
 
 public:
 	//Public Variables
-	vector<Boid> flock;
+	vector<Boid*> flock;
 
 	//Constructors
 	Flock() {}
@@ -35,9 +35,9 @@ errors.
 */
 	//Accessor functions
 	int getSize();
-	Boid getBoid(int i);
+	Boid* getBoid(int i);
 	//Mutator Functions
-	void addBoid(Boid b);
+	void addBoid(Boid* b);
 	void flocking();
 	void swarming();
 

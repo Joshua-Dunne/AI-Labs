@@ -31,7 +31,7 @@ void Boid::applyForce(Pvector force)
 
 // Function that checks and modifies the distance
 // of a boid if it breaks the law of separation.
-Pvector Boid::Separation(vector<Boid> boids)
+Pvector Boid::Separation(vector<Boid*> boids)
 {
 	// If the boid we're looking at is a predator, do not run the separation
 	// algorithm
@@ -46,14 +46,14 @@ Pvector Boid::Separation(vector<Boid> boids)
 	for (int i = 0; i < boids.size(); i++)
 	{
 		// Calculate distance from current boid to boid we're looking at
-		float d = location.distance(boids[i].location);
+		float d = location.distance(boids[i]->location);
 		if (d < neighbourDistance) //Only nearest neighbours
 		{
 			// If this is a fellow boid and it's too close, move away from it
 			if ((d > 0) && (d < desiredseparation))
 			{
 				Pvector diff(0, 0);
-				diff = diff.subTwoVector(location, boids[i].location);
+				diff = diff.subTwoVector(location, boids[i]->location);
 				diff.normalize();
 				diff.divScalar(d);      // Weight by distance
 				steer.addVector(diff);
@@ -61,10 +61,10 @@ Pvector Boid::Separation(vector<Boid> boids)
 			}
 			// If current boid is a predator and the boid we're looking at is also
 			// a predator, then separate only slightly 
-			if ((d > 0) && (d < desiredseparation) && predator == true && boids[i].predator == true)
+			if ((d > 0) && (d < desiredseparation) && predator == true && boids[i]->predator == true)
 			{
 				Pvector pred2pred(0, 0);
-				pred2pred = pred2pred.subTwoVector(location, boids[i].location);
+				pred2pred = pred2pred.subTwoVector(location, boids[i]->location);
 				pred2pred.normalize();
 				pred2pred.divScalar(d);
 				steer.addVector(pred2pred);
@@ -72,10 +72,10 @@ Pvector Boid::Separation(vector<Boid> boids)
 			}
 			// If current boid is not a predator, but the boid we're looking at is
 			// a predator, then create a large separation Pvector
-			else if ((d > 0) && (d < desiredseparation + 70) && boids[i].predator == true)
+			else if ((d > 0) && (d < desiredseparation + 70) && boids[i]->predator == true)
 			{
 				Pvector pred(0, 0);
-				pred = pred.subTwoVector(location, boids[i].location);
+				pred = pred.subTwoVector(location, boids[i]->location);
 				pred.mulScalar(900);
 				steer.addVector(pred);
 				count++;
@@ -99,7 +99,7 @@ Pvector Boid::Separation(vector<Boid> boids)
 // Alignment calculates the average velocity in the field of view and 
 // manipulates the velocity of the Boid passed as parameter to adjust to that
 // of nearby boids.
-Pvector Boid::Alignment(vector<Boid> Boids)
+Pvector Boid::Alignment(vector<Boid*> Boids)
 {
 	// If the boid we're looking at is a predator, do not run the alignment
 	// algorithm
@@ -111,10 +111,10 @@ Pvector Boid::Alignment(vector<Boid> Boids)
 	int count = 0;
 	for (int i = 0; i < Boids.size(); i++)
 	{
-		float d = location.distance(Boids[i].location);
+		float d = location.distance(Boids[i]->location);
 		if ((d > 0) && (d < neighbourDistance)) // 0 < d < 50. Only nearest neighbours
 		{
-			sum.addVector(Boids[i].velocity);
+			sum.addVector(Boids[i]->velocity);
 			count++;
 		}
 	}
@@ -137,7 +137,7 @@ Pvector Boid::Alignment(vector<Boid> Boids)
 
 // Cohesion finds the average location of nearby boids and manipulates the 
 // steering force to move in that direction.
-Pvector Boid::Cohesion(vector<Boid> Boids)
+Pvector Boid::Cohesion(vector<Boid*> Boids)
 {
 	// If the boid we're looking at is a predator, do not run the cohesion
 	// algorithm
@@ -150,10 +150,10 @@ Pvector Boid::Cohesion(vector<Boid> Boids)
 	int count = 0;
 	for (int i = 0; i < Boids.size(); i++)
 	{
-		float d = location.distance(Boids[i].location);
+		float d = location.distance(Boids[i]->location);
 		if ((d > 0) && (d < neighbourDistance))
 		{
-			sum.addVector(Boids[i].location);
+			sum.addVector(Boids[i]->location);
 			count++;
 		}
 	}
@@ -200,7 +200,7 @@ void Boid::update()
 //Run runs flock on the flock of boids for each boid.
 //Which applies the three rules, modifies accordingly, updates data, checks is data is
 //out of range, fixes that for SFML, and renders it on the window.
-void Boid::run(vector <Boid> v)
+void Boid::run(vector <Boid*> v)
 {
 	flock(v);
 	update();
@@ -209,7 +209,7 @@ void Boid::run(vector <Boid> v)
 
 //Applies all three laws for the flock of boids and modifies to keep them from
 //breaking the laws.
-void Boid::flock(vector<Boid> v) 
+void Boid::flock(vector<Boid*> v) 
 {
 	Pvector sep = Separation(v);
 	Pvector ali = Alignment(v);
@@ -242,7 +242,7 @@ float Boid::angle(Pvector v)
 	return angle;
 }
 
-void Boid::swarm(vector <Boid> v)
+void Boid::swarm(vector <Boid*> v)
 {
 /*		Lenard-Jones Potential function
 			Vector R = me.position - you.position
