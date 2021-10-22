@@ -83,6 +83,7 @@ Destructors are commented out for now. g++ throws errors if they are included.
 	void borders();
 	float angle(Pvector v);
 	void swarm(vector <Boid*> v);
+	Pvector calculateLJ(Boid* unit, Boid* otherUnit);
 };
 
 #endif

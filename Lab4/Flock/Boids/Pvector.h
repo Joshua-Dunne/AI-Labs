@@ -28,6 +28,21 @@ public:
 		x = xComp;
 		y = yComp;
 	}
+
+	Pvector operator+(Pvector i) const
+	{
+		return Pvector(x + i.x, y + i.y);
+	}
+
+	Pvector operator-(Pvector i) const
+	{
+		return Pvector(x - i.x, y - i.y);
+	}
+
+	Pvector operator*(float i) const
+	{
+		return Pvector(x * i, y * i);
+	}
 /*
 	//Destructor
 	Pvector::~Pvector()

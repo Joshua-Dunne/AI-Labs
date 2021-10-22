@@ -37,10 +37,8 @@ Game::Game()
 	for (int i = 0; i < c_NUM_OF_BOIDS; i++) //Number of boids is hardcoded for testing pusposes.
 	{
 		//Boid b(rand() % window_width, rand() % window_height); //Starts the boid with a random position in the window.
-		Boid* b = new Boid(window_width / 3, window_height / 3, false); //Starts all boids in the center of the screen
-
 		//Adding the boid to the flock and adding the shapes to the vector<sf::CircleShape>
-		flock.addBoid(b);
+		flock.addBoid(new Boid(window_width / 3, window_height / 3, false)); //Starts all boids in the center of the screen;
 	}
 
 	mainShape.setPosition(window_width, window_height); //Testing purposes, starts all shapes in the center of screen.
@@ -141,10 +139,8 @@ void Game::processMouse(sf::Event t_event)
 	{
 		//Gets mouse coordinates, sets that as the location of the boid and the shape
 		sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
-		Boid* b = new Boid(mouseCoords.x, mouseCoords.y, true);
-
 		//Adds newly created boid and shape to their respective data structure
-		flock.addBoid(b);
+		flock.addBoid(new Boid(mouseCoords.x, mouseCoords.y, true));
 	}
 
 }

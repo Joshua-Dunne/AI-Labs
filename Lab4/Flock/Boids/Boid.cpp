@@ -244,19 +244,43 @@ float Boid::angle(Pvector v)
 
 void Boid::swarm(vector <Boid*> v)
 {
-/*		Lenard-Jones Potential function
-			Vector R = me.position - you.position
-			Real D = R.magnitude()
-			Real U = -A / pow(D, N) + B / pow(D, M)
-			R.normalise()
-			force = force + R*U
-*/
-	Pvector	R;
 	Pvector sum(0, 0);
+
+	for (auto otherBoid : v)
+	{
+		if(otherBoid != this)
+			sum = sum + calculateLJ(this, otherBoid);
+	}
+	
 
 // Your code here..
 
+	sum.divScalar(static_cast<float>(v.size()));
 	applyForce(sum);
 	update();
 	borders();
+}
+
+Pvector Boid::calculateLJ(Boid* unit, Boid* otherUnit)
+{
+	/*
+	Function CalcLJ(Unit me, Unit you)
+    vector R = me.position - you.position
+    real D = R.magnitude()
+    real U = -A/pow(D,N)+ B/pow(D,M)
+    R.normalise()
+    me.Applyforce(R*U)
+	*/
+
+	float strengthAtt = 100.0f; // A
+	float strengthRep = 7000.0f; // B
+	float reductionAtt = 1.0f; // N
+	float reductionRep = 2.0f; // M
+
+	Pvector R = unit->location - otherUnit->location;
+	float distance = R.magnitude();
+	float U = (-strengthAtt / pow(distance, reductionAtt)) + (strengthRep / pow(distance, reductionRep));
+	R.normalize();
+
+	return R * U;
 }
