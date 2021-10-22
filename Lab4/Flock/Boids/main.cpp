@@ -13,30 +13,31 @@
 #endif 
 
 #include <iostream>
+#include <vector>
+#include "Boid.h"
+#include "Pvector.h"
+#include "Flock.h"
+#include "SFML/Window.hpp"
+#include "SFML/Graphics.hpp"
+#include <string>
+
 #include "Game.h"
 
-// C00241588 - Joshua Dunne
-// BUGS: Wander can act strange from time to time
+using namespace std;
+
+/*
+Brief description of Boid Class:
+// This file acts as the main for our boids project. Here, we utilize the SFML
+// library, import boids and flock classes, and run the program.-
+*/
 
 int main()
 {
-	try
-	{
-		Game game;
-		game.run();
-	}
-	catch (std::exception e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-	catch (std::string& e)
-	{
-		std::cout << e << std::endl;
-	}
-	catch (...)
-	{
-		std::cout << "An uncaught error occured!" << std::endl;
-	}
 
-	return 0;
+	std::srand(std::time(NULL));
+
+	Game game;
+	game.run();
+
+	return(0);
 }
