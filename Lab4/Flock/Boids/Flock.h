@@ -40,6 +40,8 @@ errors.
 	void addBoid(Boid* b);
 	void flocking();
 	void swarming();
+	void cFormation(int fLeader);
+	void tFormation(int fLeader);
 
 };
 

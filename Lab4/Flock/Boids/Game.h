@@ -51,6 +51,8 @@ private:
 	//Create flock, vector of shapes, and initialize boids
 	Flock flock;
 
+	int leader = 0;
+
 };
 
 #endif // !GAME_HPP

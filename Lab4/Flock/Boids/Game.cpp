@@ -121,11 +121,51 @@ void Game::processKeys(sf::Event t_event)
 	{
 		m_exitGame = true;
 	}
+	else if (sf::Keyboard::C == t_event.key.code)
+		action = "cformation";
+	else if (sf::Keyboard::T == t_event.key.code)
+		action = "tformation";
 	else if (sf::Keyboard::Space == t_event.key.code)
 		if (action == "flock")
 			action = "swarm";
 		else
 			action = "flock";
+	
+	// allow leader change on the fly
+	if (sf::Keyboard::Add == t_event.key.code)
+	{
+		if (leader < flock.getSize() - 1)
+			leader++;
+		else
+			leader = 0;
+	}
+	else if (sf::Keyboard::Subtract == t_event.key.code)
+	{
+		if (leader > 0)
+			leader--;
+		else
+			leader = flock.getSize() - 1;
+	}
+
+	if (sf::Keyboard::Left == t_event.key.code)
+	{
+		Boid* player = flock.getBoid(leader);
+		float angle = player->angle(player->velocity);
+		angle -= 0.2f;
+		float radians = angle * 3.14159f / 180.0f;
+		player->velocity.x -= cos(radians);
+		player->velocity.y -= sin(radians);
+	}
+
+	if (sf::Keyboard::Right == t_event.key.code)
+	{
+		Boid* player = flock.getBoid(leader);
+		float angle = player->angle(player->velocity);
+		angle += 0.2f;
+		float radians = angle * 3.14159f / 180.0f;
+		player->velocity.x += cos(radians);
+		player->velocity.y += sin(radians);
+	}
 
 }
 
@@ -154,6 +194,16 @@ void Game::update(sf::Time t_deltaTime)
 	//Applies the three rules to each boid in the flock and changes them accordingly.
 	if (action == "flock")
 		flock.flocking();
+	else if (action == "cformation")
+	{
+		// int leader = 0;
+		flock.cFormation(leader);
+	}
+	else if (action == "tformation")
+	{
+		// int leader = 0;
+		flock.tFormation(leader);
+	}
 	else
 		flock.swarming();
 
@@ -173,6 +223,11 @@ void Game::render()
 {
 	//Clears previous frames of visualization to not have clutter. (And simulate animation)
 	m_window.clear();
+
+	if (action == "cformation" || action == "tformation")
+		m_actionMessage.setString(action + ", Leader: " + std::to_string(leader));
+	else
+		m_actionMessage.setString(action);
 
 	m_window.draw(m_actionMessage);
 
@@ -208,6 +263,12 @@ void Game::render()
 			mainShape.setOutlineColor(sf::Color::White);
 			mainShape.setOutlineThickness(1);
 			mainShape.setRadius(boidsSize);
+		}
+
+		if (action == "cformation" || action == "tformation")
+		{
+			if(i == leader)
+				mainShape.setFillColor(sf::Color::Red);
 		}
 
 		m_window.draw(mainShape);
