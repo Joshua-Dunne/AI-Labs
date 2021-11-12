@@ -69,7 +69,8 @@ void Game::render()
 	{
 		for (int xPos = 0; xPos < 50; xPos++)
 		{
-			node.setPosition(cellGen.m_data[yPos][xPos]->m_x, cellGen.m_data[yPos][xPos]->m_y);
+			node.setPosition(static_cast<float>(cellGen.m_data[yPos][xPos]->m_x), 
+							 static_cast<float>(cellGen.m_data[yPos][xPos]->m_y));
 
 			cellCount++;
 

@@ -34,5 +34,14 @@
     <ClInclude Include="include\NodeData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\GraphArc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GraphNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

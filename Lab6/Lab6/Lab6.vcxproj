@@ -26,6 +26,9 @@
   <ItemGroup>
     <ClInclude Include="include\CellGenerator.h" />
     <ClInclude Include="include\Game.h" />
+    <ClInclude Include="include\Graph.h" />
+    <ClInclude Include="include\GraphArc.h" />
+    <ClInclude Include="include\GraphNode.h" />
     <ClInclude Include="include\NodeData.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

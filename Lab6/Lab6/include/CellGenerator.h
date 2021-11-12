@@ -2,7 +2,12 @@
 #define CELL_GEN_H
 
 #include "NodeData.h"
+#include "Graph.h"
+#include "GraphNode.h"
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream>
 
 /// <summary>
 /// A class to Generate Node Data for our Game
@@ -15,12 +20,17 @@ class CellGenerator
 public:
 	CellGenerator();
 	void populateData();
-	void findNeighbours();
+	void generateNodesFile();
+	void generateArcsFile();
+	bool fileExists(const char* fileName);
+
 	void setStart(int t_start) { m_start = t_start; }
 	void setGoal(int t_goal) { m_goal = t_goal; }
 
 	int m_start = 400;
 	int m_goal = 266;
+
+	Graph<NodeData, int> m_graph;
 	NodeData* m_data[c_MAX_Y][c_MAX_X]; // 50x50 grid of nodes
 
 };
