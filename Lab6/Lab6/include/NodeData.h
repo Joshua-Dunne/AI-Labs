@@ -1,5 +1,6 @@
 #pragma once
 #include  <string>
+#include <SFML/Graphics.hpp>
 
 // ---------------------------------------------------------------------
 //  Name:           NodeData
@@ -9,9 +10,9 @@
 struct NodeData
 {
 	int m_name;
-	int m_cost;
-	int m_distance;
-	int m_x;
-	int m_y;
+	int m_id;
+	float m_x;
+	float m_y;
+	sf::Vector2f m_dir;
 	bool m_passable = true;
 };

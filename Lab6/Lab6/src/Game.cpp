@@ -1,8 +1,9 @@
-#include "Game.h"
+#include "../include/Game.h"
 
-Game::Game() :	m_window(sf::VideoMode(800u, 800u), "Lab1")
+Game::Game() :	m_window(sf::VideoMode(3200u, 2400u), "Lab1")
 {
 	//m_window.setFramerateLimit(60u);
+	cellGen.populateData();
 	
 }
 
@@ -58,6 +59,30 @@ void Game::render()
 	m_window.clear(sf::Color::Black);
 
 	// Draw elements
+
+	sf::RectangleShape node;
+	node.setSize(sf::Vector2f{ 50.0f, 50.0f });
+	node.setOrigin(sf::Vector2f{ 25.0f, 25.0f });
+	int cellCount = 0;
+
+	for (int yPos = 0; yPos < 50; yPos++)
+	{
+		for (int xPos = 0; xPos < 50; xPos++)
+		{
+			node.setPosition(cellGen.m_data[yPos][xPos]->m_x, cellGen.m_data[yPos][xPos]->m_y);
+
+			cellCount++;
+
+			if (cellCount == cellGen.m_start)
+				node.setFillColor(sf::Color::Red);
+			else if (cellCount == cellGen.m_goal)
+				node.setFillColor(sf::Color::Green);
+			else
+				node.setFillColor(sf::Color::Blue);
+
+			m_window.draw(node);
+		}
+	}
 
 	m_window.display();
 }

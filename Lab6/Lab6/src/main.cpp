@@ -13,7 +13,7 @@
 #endif 
 
 #include <iostream>
-#include "Game.h"
+#include "../include/Game.h"
 
 int main()
 {

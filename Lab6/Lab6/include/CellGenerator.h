@@ -2,37 +2,27 @@
 #define CELL_GEN_H
 
 #include "NodeData.h"
-#include "Graph.h"
-#include "GraphNode.h"
-#include "NodeData.h"
-#include "NodeComparerTwo.h"
-#include "Wall.h"
-#include <vector>
-#include <fstream>
-#include <sstream>
+#include <iostream>
 
+/// <summary>
+/// A class to Generate Node Data for our Game
+/// </summary>
 class CellGenerator
 {
-	static const int c_MAX_X = 32; // 800 / 25 (Screen Width / Wall Size)
-	static const int c_MAX_Y = 24; // 600 / 25 (Screen Height / Wall Size)
-
-	Graph<NodeData, int> m_graph;
-	NodeData m_data[c_MAX_Y][c_MAX_X]; // 32x24 grid of nodes
-	std::vector<Wall*> m_walls;
-	std::vector<sf::Vector2i> m_unpassable;
-
-	bool fileExists(const char* fileName);
-	void checkPassable();
-	void generateNodesFile();
-	void generateArcsFile();
+	static const int c_MAX_X = 50; // 800 / 50 (Screen Width / Wall Size)
+	static const int c_MAX_Y = 50; // 800 / 50 (Screen Height / Wall Size)
 
 public:
 	CellGenerator();
-
-	void setObstacles(std::vector<Wall*>& t_walls);
 	void populateData();
-	inline Graph<NodeData, int>& getGraph() { return m_graph; };
-	void renderUpassable(sf::RenderWindow &t_window);
+	void findNeighbours();
+	void setStart(int t_start) { m_start = t_start; }
+	void setGoal(int t_goal) { m_goal = t_goal; }
+
+	int m_start = 400;
+	int m_goal = 266;
+	NodeData* m_data[c_MAX_Y][c_MAX_X]; // 50x50 grid of nodes
+
 };
 
 #endif
