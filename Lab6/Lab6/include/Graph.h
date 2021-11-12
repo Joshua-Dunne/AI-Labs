@@ -39,8 +39,8 @@ public:
     void removeArc( int from, int to );
     Arc* getArc( int from, int to );        
     void clearMarks();
-    void depthFirst( Node* node);
-    void breadthFirst( Node* node, std::function<void(Node *)> f_visit);
+    void depthFirst(Node* node);
+    void breadthFirst(Node* node);
     void reset();
 private:
 	
@@ -287,21 +287,23 @@ void Graph<NodeType, ArcType>::depthFirst(Node* node)
 //  Return Value:   None.
 // ----------------------------------------------------------------
 template<class NodeType, class ArcType>
-void Graph<NodeType, ArcType>::breadthFirst( Node* node, std::function<void(Node *)> f_visit) 
+void Graph<NodeType, ArcType>::breadthFirst(Node* node) 
 {
+    // first node entered is the start node
+    
+    int numberFromStart = 1;
+
    if( nullptr != node ) 
    {
 	  std::queue<Node*> nodeQueue;        
 	  // place the first node on the queue, and mark it.
       nodeQueue.push( node );
       node->setMarked(true);
+      node->m_data.m_id = 0;
 
       // loop through the queue while there are nodes in it.
       while( nodeQueue.size() != 0 ) 
 	  {
-         // process the node at the front of the queue.
-		 f_visit( nodeQueue.front() );
-
          // add all of the child nodes that have not been 
          // marked into the queue
          auto iter = nodeQueue.front()->arcList().begin();
@@ -312,11 +314,13 @@ void Graph<NodeType, ArcType>::breadthFirst( Node* node, std::function<void(Node
               if ( (*iter).node()->marked() == false) 
 			  {
 				 // mark the node and add it to the queue.
+                  node->m_data.m_id = numberFromStart;
                  (*iter).node()->setMarked(true);
                  nodeQueue.push( (*iter).node() );
               }
          }
 
+         numberFromStart++;
          // dequeue the current node.
          nodeQueue.pop();
       }

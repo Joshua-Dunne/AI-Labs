@@ -26,6 +26,8 @@ void CellGenerator::populateData()
 	// Now that the Data has been filled, generate the nodes.txt
 	generateNodesFile();
 	generateArcsFile();
+
+	m_graph.breadthFirst(m_graph.nodeIndex(m_start));
 }
 
 /// <summary>

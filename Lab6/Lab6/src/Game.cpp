@@ -65,12 +65,19 @@ void Game::render()
 	node.setOrigin(sf::Vector2f{ 25.0f, 25.0f });
 	int cellCount = 0;
 
+	sf::Font font;
+	font.loadFromFile("assets/fonts/bell.ttf");
+
+	sf::Text num;
+
 	for (int yPos = 0; yPos < 50; yPos++)
 	{
 		for (int xPos = 0; xPos < 50; xPos++)
 		{
 			node.setPosition(static_cast<float>(cellGen.m_data[yPos][xPos]->m_x), 
 							 static_cast<float>(cellGen.m_data[yPos][xPos]->m_y));
+			num.setPosition(node.getPosition());
+			num.setString(std::to_string(cellGen.m_data[yPos][xPos]->m_id));
 
 			cellCount++;
 
@@ -82,6 +89,7 @@ void Game::render()
 				node.setFillColor(sf::Color::Blue);
 
 			m_window.draw(node);
+			m_window.draw(num);
 		}
 	}
 
