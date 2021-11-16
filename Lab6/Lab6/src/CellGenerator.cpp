@@ -106,6 +106,7 @@ void CellGenerator::resetData()
 		for (int xPos = 0; xPos < c_MAX_X; xPos++)
 		{
 			m_data[yPos][xPos]->m_id = m_graph.nodeIndex(currCell)->m_data.m_id;
+			m_data[yPos][xPos]->m_passable = m_graph.nodeIndex(currCell)->m_data.m_passable;
 			currCell++;
 		}
 	}

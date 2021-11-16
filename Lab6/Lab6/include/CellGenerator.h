@@ -29,7 +29,7 @@ public:
 
 	int m_start = 400;
 	int m_goal = 276;
-	int m_cellSize = 32;
+	int m_cellSize = 16;
 
 	Graph<NodeData, int> m_graph;
 	NodeData* m_data[c_MAX_Y][c_MAX_X]; // 50x50 grid of nodes

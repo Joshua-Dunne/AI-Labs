@@ -1,6 +1,6 @@
 #include "../include/Game.h"
 
-Game::Game() :	m_window(sf::VideoMode(1600u, 1600u), "Lab1")
+Game::Game() :	m_window(sf::VideoMode(800u, 800u), "Lab1")
 {
 	//m_window.setFramerateLimit(60u);
 	cellGen.populateData();
@@ -8,7 +8,7 @@ Game::Game() :	m_window(sf::VideoMode(1600u, 1600u), "Lab1")
 	font.loadFromFile("assets/fonts/bell.ttf");
 
 	num.setFont(font);
-	num.setCharacterSize(16u);
+	num.setCharacterSize(12u);
 	num.setFillColor(sf::Color::White);
 	
 }
@@ -108,10 +108,13 @@ void Game::processInput()
 							if (event.mouseButton.y >= cellGen.m_data[yPos][xPos]->m_y
 								&& event.mouseButton.y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
 							{
-								finished = true;
-								cellGen.setGoal(cellCount);
-								cellGen.resetData();
-								break;
+								if (cellGen.m_data[yPos][xPos]->m_id != 999)
+								{ // cannot set start or goal to an unpassable node
+									finished = true;
+									cellGen.setGoal(cellCount);
+									cellGen.resetData();
+									break;
+								}
 							}
 						}
 
@@ -141,7 +144,8 @@ void Game::processInput()
 								if (cellCount != cellGen.m_start && cellCount != cellGen.m_goal)
 								{ // only allow something to be set as unpassable if it isn't the start or the goal
 									finished = true;
-									cellGen.m_data[yPos][xPos]->m_passable = !cellGen.m_data[yPos][xPos]->m_passable;
+									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_passable = !cellGen.m_graph.nodeIndex(cellCount)->m_data.m_passable;
+									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_id;
 									cellGen.resetData();
 									break;
 								}	
@@ -171,19 +175,19 @@ void Game::render()
 	// Draw elements
 
 	sf::RectangleShape node;
-	node.setSize(sf::Vector2f{ 32.0f, 32.0f });
-	node.setOrigin(sf::Vector2f{ 25.0f, 25.0f });
+	node.setSize(sf::Vector2f{ static_cast<float>(cellGen.m_cellSize), static_cast<float>(cellGen.m_cellSize) });
+	node.setOrigin(sf::Vector2f{ cellGen.m_cellSize / 2.0f, cellGen.m_cellSize / 2.0f });
 	int cellCount = 0;
 
 	for (int yPos = 0; yPos < 50; yPos++)
 	{
 		for (int xPos = 0; xPos < 50; xPos++)
 		{
-			node.setPosition(static_cast<float>(cellGen.m_data[yPos][xPos]->m_x + (32.0f / 2.0f)), 
-							 static_cast<float>(cellGen.m_data[yPos][xPos]->m_y + (32.0f / 2.0f)));
+			node.setPosition(static_cast<float>(cellGen.m_data[yPos][xPos]->m_x + (cellGen.m_cellSize / 2.0f)),
+							 static_cast<float>(cellGen.m_data[yPos][xPos]->m_y + (cellGen.m_cellSize / 2.0f)));
 			if (toggleNumbers)
 			{
-				num.setPosition(node.getPosition() - sf::Vector2f{ (32.0f / 2.0f), (32.0f / 2.0f) });
+				num.setPosition(node.getPosition() - sf::Vector2f{ (cellGen.m_cellSize / 2.0f), (cellGen.m_cellSize / 2.0f) });
 				num.setString(std::to_string(cellGen.m_data[yPos][xPos]->m_id));
 			}
 
