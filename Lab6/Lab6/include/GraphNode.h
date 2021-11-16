@@ -13,7 +13,7 @@ template <typename NodeType, typename ArcType> class GraphArc;
 //              arcs.
 // -------------------------------------------------------
 template<class NodeType, class ArcType>
-class GraphNode 
+class GraphNode
 {
 public:
 	// typedef the classes to make our lives easier.
@@ -21,37 +21,37 @@ public:
 	typedef GraphNode<NodeType, ArcType> Node;
 
 	// Constructor function
-	GraphNode( Node * previous = 0 ) : m_previous( previous ) {}
+	GraphNode(Node* previous = 0) : m_previous(previous) {}
 
-    // Accessor functions
-    std::list<Arc> const & arcList() const 
+	// Accessor functions
+	std::list<Arc> const& arcList() const
 	{
-        return m_arcList;              
-    }
+		return m_arcList;
+	}
 
-    bool marked() const 
+	bool marked() const
 	{
-        return m_marked;
-    }
+		return m_marked;
+	}
 
-	Node * previous() const 
+	Node* previous() const
 	{
 		return m_previous;
 	}
 
-    void setMarked(bool mark) 
+	void setMarked(bool mark)
 	{
-        m_marked = mark;
-    }
-           
-	void setPrevious(Node *previous) 
+		m_marked = mark;
+	}
+
+	void setPrevious(Node* previous)
 	{
 		m_previous = previous;
 	}
 
-    Arc* getArc( Node* node );    
-    void addArc( Node* node, ArcType weight );
-    void removeArc( Node* node );
+	Arc* getArc(Node* node);
+	void addArc(Node* node, ArcType weight);
+	void removeArc(Node* node);
 
 	// -------------------------------------------------------
 	// Description: data stored in each node
@@ -85,24 +85,24 @@ private:
 //                  exist from this to the specified input node.
 // ----------------------------------------------------------------
 template<typename NodeType, typename ArcType>
-GraphArc<NodeType, ArcType>* GraphNode<NodeType, ArcType>::getArc( Node* node ) 
+GraphArc<NodeType, ArcType>* GraphNode<NodeType, ArcType>::getArc(Node* node)
 {
 
-     auto iter = m_arcList.begin();
-     auto endIter = m_arcList.end();
-     Arc* arc = 0;
-     
-     // find the arc that matches the node
-     for( ; iter != endIter && nullptr == arc; ++iter ) 
-	 {         
-          if ( (*iter).node() == node) 
-		  {
-               arc = &( (*iter) );
-          }
-     }
+	auto iter = m_arcList.begin();
+	auto endIter = m_arcList.end();
+	Arc* arc = 0;
 
-     // returns nullptr if not found
-     return arc;
+	// find the arc that matches the node
+	for (; iter != endIter && nullptr == arc; ++iter)
+	{
+		if ((*iter).node() == node)
+		{
+			arc = &((*iter));
+		}
+	}
+
+	// returns nullptr if not found
+	return arc;
 }
 
 
@@ -116,14 +116,14 @@ GraphArc<NodeType, ArcType>* GraphNode<NodeType, ArcType>::getArc( Node* node )
 //  Return Value:   None.
 // ----------------------------------------------------------------
 template<typename NodeType, typename ArcType>
-void GraphNode<NodeType, ArcType>::addArc( Node* node, ArcType weight ) 
+void GraphNode<NodeType, ArcType>::addArc(Node* node, ArcType weight)
 {
-   // Create a new arc.
-   Arc a;
-   a.setNode(node);
-   a.setWeight(weight);   
-   // Add it to the arc list.
-   m_arcList.push_back( a );
+	// Create a new arc.
+	Arc a;
+	a.setNode(node);
+	a.setWeight(weight);
+	// Add it to the arc list.
+	m_arcList.push_back(a);
 }
 
 
@@ -135,20 +135,20 @@ void GraphNode<NodeType, ArcType>::addArc( Node* node, ArcType weight )
 //  Return Value:   None.
 // ----------------------------------------------------------------
 template<typename NodeType, typename ArcType>
-void GraphNode<NodeType, ArcType>::removeArc( Node* node ) 
+void GraphNode<NodeType, ArcType>::removeArc(Node* node)
 {
-     auto iter = m_arcList.begin();
-     auto endIter = m_arcList.end();
+	auto iter = m_arcList.begin();
+	auto endIter = m_arcList.end();
 
-     int size = m_arcList.size();
-     // find the arc that matches the node
-     for( ; iter != endIter && m_arcList.size() == size; ++iter ) 
-	 {
-          if ( (*iter).node() == node) 
-		  {
-             m_arcList.remove( (*iter) );
-          }                           
-     }
+	int size = m_arcList.size();
+	// find the arc that matches the node
+	for (; iter != endIter && m_arcList.size() == size; ++iter)
+	{
+		if ((*iter).node() == node)
+		{
+			m_arcList.remove((*iter));
+		}
+	}
 }
 
 #include "GraphArc.h"

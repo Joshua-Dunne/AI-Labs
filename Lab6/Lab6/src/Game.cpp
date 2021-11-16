@@ -1,9 +1,15 @@
 #include "../include/Game.h"
 
-Game::Game() :	m_window(sf::VideoMode(3200u, 2400u), "Lab1")
+Game::Game() :	m_window(sf::VideoMode(1600u, 1600u), "Lab1")
 {
 	//m_window.setFramerateLimit(60u);
 	cellGen.populateData();
+
+	font.loadFromFile("assets/fonts/bell.ttf");
+
+	num.setFont(font);
+	num.setCharacterSize(16u);
+	num.setFillColor(sf::Color::White);
 	
 }
 
@@ -46,6 +52,110 @@ void Game::processInput()
 		{
 			m_window.close();
 		}
+
+		if (event.type == sf::Event::KeyPressed)
+		{
+			if (event.key.code == sf::Keyboard::N)
+			{
+				toggleNumbers = !toggleNumbers;
+			}
+		}
+
+		if (event.type == sf::Event::MouseButtonReleased)
+		{
+			// Left Click to set Start Goal
+			if (event.mouseButton.button == sf::Mouse::Left)
+			{
+				int cellCount = 0;
+				bool finished = false;
+
+				for (int yPos = 0; yPos < 50; yPos++)
+				{
+					for (int xPos = 0; xPos < 50; xPos++)
+					{
+						if (event.mouseButton.x >= cellGen.m_data[yPos][xPos]->m_x
+							&& event.mouseButton.x <= cellGen.m_data[yPos][xPos]->m_x + cellGen.m_cellSize)
+						{
+							if (event.mouseButton.y >= cellGen.m_data[yPos][xPos]->m_y
+								&& event.mouseButton.y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
+							{
+								finished = true;
+								cellGen.setStart(cellCount);
+								break;
+							}
+						}
+
+						cellCount++;
+					}
+
+					if (finished)
+						break;
+				}
+			}
+
+			if (event.mouseButton.button == sf::Mouse::Right)
+			{
+				int cellCount = 0;
+				bool finished = false;
+
+				for (int yPos = 0; yPos < 50; yPos++)
+				{
+					for (int xPos = 0; xPos < 50; xPos++)
+					{
+						if (event.mouseButton.x >= cellGen.m_data[yPos][xPos]->m_x
+							&& event.mouseButton.x <= cellGen.m_data[yPos][xPos]->m_x + cellGen.m_cellSize)
+						{
+							if (event.mouseButton.y >= cellGen.m_data[yPos][xPos]->m_y
+								&& event.mouseButton.y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
+							{
+								finished = true;
+								cellGen.setGoal(cellCount);
+								cellGen.resetData();
+								break;
+							}
+						}
+
+						cellCount++;
+					}
+
+					if (finished)
+						break;
+				}
+			}
+
+			if (event.mouseButton.button == sf::Mouse::Middle)
+			{
+				int cellCount = 0;
+				bool finished = false;
+
+				for (int yPos = 0; yPos < 50; yPos++)
+				{
+					for (int xPos = 0; xPos < 50; xPos++)
+					{
+						if (event.mouseButton.x >= cellGen.m_data[yPos][xPos]->m_x
+							&& event.mouseButton.x <= cellGen.m_data[yPos][xPos]->m_x + cellGen.m_cellSize)
+						{
+							if (event.mouseButton.y >= cellGen.m_data[yPos][xPos]->m_y
+								&& event.mouseButton.y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
+							{
+								if (cellCount != cellGen.m_start && cellCount != cellGen.m_goal)
+								{ // only allow something to be set as unpassable if it isn't the start or the goal
+									finished = true;
+									cellGen.m_data[yPos][xPos]->m_passable = !cellGen.m_data[yPos][xPos]->m_passable;
+									cellGen.resetData();
+									break;
+								}	
+							}
+						}
+
+						cellCount++;
+					}
+
+					if (finished)
+						break;
+				}
+			}
+		}
 	}
 }
 
@@ -61,25 +171,21 @@ void Game::render()
 	// Draw elements
 
 	sf::RectangleShape node;
-	node.setSize(sf::Vector2f{ 50.0f, 50.0f });
+	node.setSize(sf::Vector2f{ 32.0f, 32.0f });
 	node.setOrigin(sf::Vector2f{ 25.0f, 25.0f });
 	int cellCount = 0;
-
-	sf::Font font;
-	font.loadFromFile("assets/fonts/bell.ttf");
-
-	sf::Text num;
 
 	for (int yPos = 0; yPos < 50; yPos++)
 	{
 		for (int xPos = 0; xPos < 50; xPos++)
 		{
-			node.setPosition(static_cast<float>(cellGen.m_data[yPos][xPos]->m_x), 
-							 static_cast<float>(cellGen.m_data[yPos][xPos]->m_y));
-			num.setPosition(node.getPosition());
-			num.setString(std::to_string(cellGen.m_data[yPos][xPos]->m_id));
-
-			cellCount++;
+			node.setPosition(static_cast<float>(cellGen.m_data[yPos][xPos]->m_x + (32.0f / 2.0f)), 
+							 static_cast<float>(cellGen.m_data[yPos][xPos]->m_y + (32.0f / 2.0f)));
+			if (toggleNumbers)
+			{
+				num.setPosition(node.getPosition() - sf::Vector2f{ (32.0f / 2.0f), (32.0f / 2.0f) });
+				num.setString(std::to_string(cellGen.m_data[yPos][xPos]->m_id));
+			}
 
 			if (cellCount == cellGen.m_start)
 				node.setFillColor(sf::Color::Red);
@@ -87,6 +193,17 @@ void Game::render()
 				node.setFillColor(sf::Color::Green);
 			else
 				node.setFillColor(sf::Color::Blue);
+
+			// now that the color has been set, we'll change the transparency based on the ID
+			if (cellCount != cellGen.m_start && cellCount != cellGen.m_goal)
+			{// don't change transparency if it's the start of end
+				if (cellGen.m_data[yPos][xPos]->m_passable)
+					node.setFillColor(node.getFillColor() - sf::Color::Color(0, 0, 0, cellGen.m_data[yPos][xPos]->m_id * 5));
+				else
+					node.setFillColor(sf::Color::Black);
+			}
+
+			cellCount++;
 
 			m_window.draw(node);
 			m_window.draw(num);

@@ -21,6 +21,10 @@ public:
 	void render();
 
 	CellGenerator cellGen;
+
+	sf::Font font;
+	sf::Text num;
+	bool toggleNumbers = false;
 };
 
 #endif
