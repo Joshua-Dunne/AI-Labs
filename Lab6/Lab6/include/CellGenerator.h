@@ -33,6 +33,7 @@ public:
 
 	Graph<NodeData, int> m_graph;
 	NodeData* m_data[c_MAX_Y][c_MAX_X]; // 50x50 grid of nodes
+	std::vector<int> path;
 
 };
 

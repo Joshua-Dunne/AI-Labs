@@ -206,6 +206,14 @@ void Game::render()
 				else
 					node.setFillColor(sf::Color::Black);
 			}
+			
+			for (size_t pathIt = 0; pathIt < cellGen.path.size(); pathIt++)
+			{
+				if (cellGen.path[pathIt] == cellGen.m_data[yPos][xPos]->m_id)
+				{
+					node.setFillColor(sf::Color::Yellow);
+				}
+			}
 
 			cellCount++;
 

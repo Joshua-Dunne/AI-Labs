@@ -42,10 +42,10 @@ public:
     Arc* getArc(int from, int to);
     void clearMarks();
     void depthFirst(Node* node, std::function<void(Node*)> f_visit);
-    void ucs(Node* start, Node* dest, std::function<void(Node*)> f_visit, std::vector<Node*>& path);
+    void ucs(Node* start, Node* dest, std::vector<Node*>& path);
     void breadthFirst(Node* node);
+    void iteration(Node* start, Node* goal, std::vector<int>& path);
     void adaptedBreadthFirst(Node* current, Node* goal);
-    void aStar(Node* start, Node* dest, std::function<void(Node*)> f_visit, std::vector<Node*>& path);
     void reset();
 private:
 
@@ -244,7 +244,7 @@ GraphArc<NodeType, ArcType>* Graph<NodeType, ArcType>::getArc(int from, int to)
 template<class NodeType, class ArcType>
 void Graph<NodeType, ArcType>::clearMarks()
 {
-    for (int index = 0; index < m_nodes.size(); index++)
+    for (size_t index = 0; index < m_nodes.size(); index++)
     {
         if (nullptr != m_nodes.at(index))
         {
@@ -292,7 +292,7 @@ void Graph<NodeType, ArcType>::depthFirst(Node* node, std::function<void(Node*)>
 // ----------------------------------------------------------------
 
 template<class NodeType, class ArcType>
-inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::function<void(Node*)> f_visit, std::vector<Node*>& path)
+inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::vector<Node*>& path)
 {
     if (start != nullptr && dest != nullptr)
     {
@@ -301,10 +301,10 @@ inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::function
         std::priority_queue<Node*, std::vector<Node*>, NodeComparer<NodeType, ArcType>> pq;
         for (Node* node : m_nodes)
         {
-            node->m_data.m_cost = std::numeric_limits<int>::max();
+            node->m_data.m_id = std::numeric_limits<int>::max();
             std::cout << "crash 1.25" << std::endl;
         }
-        start->m_data.m_cost = 0;
+        start->m_data.m_id = 0;
         bool goalReached = false;
         pq.push(start);
         start->setMarked(true);
@@ -314,10 +314,10 @@ inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::function
             {
                 if (arc.node() != pq.top()->previous())
                 {
-                    int distC = (pq.top()->m_data.m_cost + arc.weight());//jack showed me how to do this part
-                    if (arc.node()->m_data.m_cost > distC)
+                    int distC = (pq.top()->m_data.m_id + arc.weight());//jack showed me how to do this part
+                    if (arc.node()->m_data.m_id > distC)
                     {
-                        arc.node()->m_data.m_cost = distC;
+                        arc.node()->m_data.m_id = distC;
 
                         arc.node()->setPrevious(pq.top());
                     }
@@ -341,11 +341,6 @@ inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::function
             current = current->previous();
 
         }
-        for (auto begin = path.rbegin(); begin != path.rend(); begin++)
-        {
-
-            f_visit(*begin);
-        }
     }
 }
 
@@ -360,6 +355,9 @@ inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::function
 template<class NodeType, class ArcType>
 void Graph<NodeType, ArcType>::breadthFirst(Node* node)
 {
+    reset();
+    clearMarks();
+
     for (size_t i = 0; i < m_nodes.size(); i++)
     {
         if (m_nodes[i]->m_data.m_passable)
@@ -402,6 +400,80 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* node)
             }
             // dequeue the current node.
             nodeQueue.pop();
+        }
+    }
+}
+
+// ----------------------------------------------------------------
+//  Name:           iteration
+//  Description:    Using existing id data, get a path to the goal from the start
+//  Arguments:      The first parameter is the starting node
+//                  The second parameter is the goal
+//                  The third parameter is the final path.
+//  Return Value:   None.
+// ----------------------------------------------------------------
+template<class NodeType, class ArcType>
+void Graph<NodeType, ArcType>::iteration(Node* start, Node* goal, std::vector<int>& path)
+{
+    clearMarks();
+
+    for (size_t i = 0; i < m_nodes.size(); i++)
+    {
+        if (!m_nodes[i]->m_data.m_passable)
+        {
+            m_nodes[i]->m_data.m_id = 999;
+            m_nodes[i]->setMarked(true);
+        }
+
+    }
+
+
+    for (Node* node : m_nodes)
+    {
+        // calculate distance to goal node from every node
+        if(node->m_data.m_passable)
+            node->m_data.m_distance = sqrt(pow(goal->m_data.m_x - node->m_data.m_x, 2) + pow(goal->m_data.m_y - node->m_data.m_y, 2));
+
+    }
+
+    if (nullptr != start && nullptr != goal)
+    {
+        std::queue<Node*> nodeQueue;
+        // place the first node on the queue, and mark it.
+        nodeQueue.push(start);
+        path.push_back(start->m_data.m_id);
+
+        // loop through the queue while there are nodes in it.
+        while (nodeQueue.size() != 0)
+        {
+            // add all of the child nodes that have not been 
+            // marked into the queue
+            auto iter = nodeQueue.front()->arcList().begin();
+            auto endIter = nodeQueue.front()->arcList().end();
+
+            for (; iter != endIter; iter++)
+            {
+                if ((*iter).node()->marked() == false)
+                {
+                    if ((*iter).node()->m_data.m_id + (*iter).node()->m_data.m_distance
+                        < nodeQueue.front()->m_data.m_id + nodeQueue.front()->m_data.m_distance)
+                    { // always move towards the next smallest
+                        path.push_back((*iter).node()->m_data.m_id);
+                        nodeQueue.push((*iter).node());
+                        (*iter).node()->setMarked(true);
+                    }
+                }
+
+                
+            }
+            // dequeue the current node.
+            nodeQueue.pop();
+
+            if (nodeQueue.front() == goal) // if the goal is the front of the queue, don't need to go further
+            {
+                break;
+            }
+                
         }
     }
 }
@@ -459,123 +531,14 @@ void Graph<NodeType, ArcType>::adaptedBreadthFirst(Node* current, Node* goal)
         }
     }
 }
-template<class NodeType, class ArcType>
-void Graph<NodeType, ArcType>::aStar(Node* start, Node* dest, std::function<void(Node*)> f_visit, std::vector<Node*>& path)
-{
 
-
-    //  Initialise g[start] to 0  For each node v in graph 
-    //  GCalculate h[v] // Compute estimated distance to goal for each node.Initialise g[v] to infinity 
-                      // Don’t yet know the distances to these nodesAdd start to the pq 
-                      // N.B. The pq must sort nodes by their f(n) valuesMark(start)
-   //   While the queue is not empty AND pq.top() != goal
-   //   For each child node of pq.top()
-      //If (child != previous(pq.top())
-     //     Let distantChild = h(child) + g(child) // g(child) is actual path cost to child
-      //    If ( distantChild < f(child) )
-      //    let f[child] = distantChild
-        //  Set previous pointer of child to pq.top()
-        //  End if
-       //   If (notMarked(child))
-      //    Add child to the pq Mark(child)
-       //   End if
-      //    End if
-      //    End for
-         // Remove pq.top()
-     //     End while
-    reset();
-    clearMarks();
-
-    if (start != nullptr && dest != nullptr)
-    {
-
-
-        std::priority_queue<Node*, std::vector<Node*>, NodeComparerTwo<NodeType, ArcType>> pq;
-
-        for (Node* node : m_nodes)
-        {
-            node->m_data.m_cost = std::numeric_limits<int>::max() - 100000;
-
-            node->m_data.m_distance = sqrt(pow(dest->m_data.m_x - node->m_data.m_x, 2) + pow(dest->m_data.m_y - node->m_data.m_y, 2));
-
-        }
-        start->m_data.m_cost = 0;
-        bool goalReached = false;
-        pq.push(start);
-
-        start->setMarked(true);
-
-        Node* closestNode = dest;
-        closestNode->m_data.m_distance = 10000;
-        Node* lastNode = nullptr;
-
-        while (!pq.empty() && pq.top() != dest)
-        {
-
-            for (auto arc : pq.top()->arcList())
-            {
-
-
-                if (arc.node() != pq.top()->previous())
-                {
-                    int distantChild = pq.top()->m_data.m_cost + arc.weight() + arc.node()->m_data.m_distance;
-
-                    if (arc.node()->m_data.m_passable)
-                    {
-                        if (distantChild < arc.node()->m_data.m_distance + arc.node()->m_data.m_cost)
-                        {
-                            arc.node()->m_data.m_cost = pq.top()->m_data.m_cost + arc.weight();
-
-                            arc.node()->setPrevious(pq.top());
-
-                        }
-                    }
-                    if (!arc.node()->marked())
-                    {
-
-                        pq.push(arc.node());
-
-                        arc.node()->setMarked(true);
-                    }
-
-
-                }
-            }
-            lastNode = pq.top();
-            if ((lastNode->m_data.m_distance) < (closestNode->m_data.m_distance))
-            {
-
-                closestNode = lastNode;
-            }
-            pq.pop();
-
-        }
-
-        Node* current = pq.top();
-        while (current != nullptr)
-        {
-            path.push_back(current);
-
-            current = current->previous();
-
-        }
-        for (auto begin = path.rbegin(); begin != path.rend(); begin++)
-        {
-
-            f_visit(*begin);
-
-        }
-    }
-}
 
 template<class NodeType, class ArcType>
 inline void Graph<NodeType, ArcType>::reset()
 {
-    for (int index = 0; index < m_nodes.size(); index++)
+    for (size_t index = 0; index < m_nodes.size(); index++)
     {
-
         m_nodes[index]->setPrevious(nullptr);
-
     }
 }
 

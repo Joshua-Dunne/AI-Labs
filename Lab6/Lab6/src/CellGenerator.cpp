@@ -23,6 +23,9 @@ void CellGenerator::populateData()
 		}
 	}
 
+	generateNodes();
+	generateArcs();
+
 	resetData();
 }
 
@@ -94,8 +97,7 @@ void CellGenerator::generateArcs()
 void CellGenerator::resetData()
 {
 	// Now that the Data has been filled, generate all necessary Nodes and Arcs
-	generateNodes();
-	generateArcs();
+	path.clear();
 
 	m_graph.breadthFirst(m_graph.nodeIndex(m_goal));
 
@@ -110,4 +112,6 @@ void CellGenerator::resetData()
 			currCell++;
 		}
 	}
+
+	m_graph.iteration(m_graph.nodeIndex(m_start), m_graph.nodeIndex(m_goal), path);
 }
