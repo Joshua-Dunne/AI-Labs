@@ -1,6 +1,6 @@
 #include "../include/Game.h"
 
-Game::Game() :	m_window(sf::VideoMode(800u, 800u), "Lab1")
+Game::Game() :	m_window(sf::VideoMode(800u, 800u), "Lab6")
 {
 	//m_window.setFramerateLimit(60u);
 	cellGen.populateData();
@@ -108,7 +108,7 @@ void Game::processInput()
 							if (event.mouseButton.y >= cellGen.m_data[yPos][xPos]->m_y
 								&& event.mouseButton.y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
 							{
-								if (cellGen.m_data[yPos][xPos]->m_id != 999)
+								if (cellGen.m_data[yPos][xPos]->m_name != 999)
 								{ // cannot set start or goal to an unpassable node
 									finished = true;
 									cellGen.setGoal(cellCount);
@@ -145,7 +145,7 @@ void Game::processInput()
 								{ // only allow something to be set as unpassable if it isn't the start or the goal
 									finished = true;
 									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_passable = !cellGen.m_graph.nodeIndex(cellCount)->m_data.m_passable;
-									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_id;
+									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_name;
 									cellGen.resetData();
 									break;
 								}	
@@ -188,21 +188,16 @@ void Game::render()
 			if (toggleNumbers)
 			{
 				num.setPosition(node.getPosition() - sf::Vector2f{ (cellGen.m_cellSize / 2.0f), (cellGen.m_cellSize / 2.0f) });
-				num.setString(std::to_string(cellGen.m_data[yPos][xPos]->m_id));
+				num.setString(std::to_string(cellGen.m_data[yPos][xPos]->m_name));
 			}
 
-			if (cellCount == cellGen.m_start)
-				node.setFillColor(sf::Color::Red);
-			else if (cellCount == cellGen.m_goal)
-				node.setFillColor(sf::Color::Green);
-			else
-				node.setFillColor(sf::Color::Blue);
+			node.setFillColor(sf::Color::Blue);			
 
 			// now that the color has been set, we'll change the transparency based on the ID
 			if (cellCount != cellGen.m_start && cellCount != cellGen.m_goal)
 			{// don't change transparency if it's the start of end
 				if (cellGen.m_data[yPos][xPos]->m_passable)
-					node.setFillColor(node.getFillColor() - sf::Color::Color(0, 0, 0, cellGen.m_data[yPos][xPos]->m_id * 5));
+					node.setFillColor(node.getFillColor() - sf::Color::Color(0, 0, 0, cellGen.m_data[yPos][xPos]->m_name * 5));
 				else
 					node.setFillColor(sf::Color::Black);
 			}
@@ -214,6 +209,11 @@ void Game::render()
 					node.setFillColor(sf::Color::Yellow);
 				}
 			}
+
+			if (cellCount == cellGen.m_start)
+				node.setFillColor(sf::Color::Red);
+			else if (cellCount == cellGen.m_goal)
+				node.setFillColor(sf::Color::Green);
 
 			cellCount++;
 

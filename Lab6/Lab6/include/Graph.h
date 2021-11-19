@@ -41,8 +41,6 @@ public:
     void removeArc(int from, int to);
     Arc* getArc(int from, int to);
     void clearMarks();
-    void depthFirst(Node* node, std::function<void(Node*)> f_visit);
-    void ucs(Node* start, Node* dest, std::vector<Node*>& path);
     void breadthFirst(Node* node);
     void iteration(Node* start, Node* goal, std::vector<int>& path);
     void adaptedBreadthFirst(Node* current, Node* goal);
@@ -253,97 +251,6 @@ void Graph<NodeType, ArcType>::clearMarks()
     }
 }
 
-
-// ----------------------------------------------------------------
-//  Name:           depthFirst
-//  Description:    Performs a depth-first traversal on the specified 
-//                  node.
-//  Arguments:      The first argument is the starting node
-//                  The second argument is the processing function.
-//  Return Value:   None.
-// ----------------------------------------------------------------
-template<class NodeType, class ArcType>
-void Graph<NodeType, ArcType>::depthFirst(Node* node, std::function<void(Node*)> f_visit)
-{
-    if (nullptr != node) {
-        // process the current node and mark it
-        f_visit(node);
-        node->setMarked(true);
-
-        // go through each connecting node
-        auto iter = node->arcList().begin();
-        auto endIter = node->arcList().end();
-
-        for (; iter != endIter; ++iter)
-        {
-            // process the linked node if it isn't already marked.
-            if ((*iter).node()->marked() == false)
-            {
-                depthFirst((*iter).node(), f_visit);
-            }
-        }
-    }
-}
-// ----------------------------------------------------------------
-//  Name:           ucs
-//  Description:   finding the cheapest path between the two nodes
-//  Arguments:      start node,end node, function to print and vector to store path.
-//  Return Value:   None.
-// ----------------------------------------------------------------
-
-template<class NodeType, class ArcType>
-inline void Graph<NodeType, ArcType>::ucs(Node* start, Node* dest, std::vector<Node*>& path)
-{
-    if (start != nullptr && dest != nullptr)
-    {
-
-        //jack showed me how to do this part
-        std::priority_queue<Node*, std::vector<Node*>, NodeComparer<NodeType, ArcType>> pq;
-        for (Node* node : m_nodes)
-        {
-            node->m_data.m_id = std::numeric_limits<int>::max();
-            std::cout << "crash 1.25" << std::endl;
-        }
-        start->m_data.m_id = 0;
-        bool goalReached = false;
-        pq.push(start);
-        start->setMarked(true);
-        while (!pq.empty() && pq.top() != dest)
-        {
-            for (auto arc : pq.top()->arcList())
-            {
-                if (arc.node() != pq.top()->previous())
-                {
-                    int distC = (pq.top()->m_data.m_id + arc.weight());//jack showed me how to do this part
-                    if (arc.node()->m_data.m_id > distC)
-                    {
-                        arc.node()->m_data.m_id = distC;
-
-                        arc.node()->setPrevious(pq.top());
-                    }
-                    if (!arc.node()->marked())
-                    {
-                        pq.push(arc.node());
-                        arc.node()->setMarked(true);
-                    }
-
-
-                }
-            }
-            pq.pop();
-        }
-
-        Node* current = pq.top();
-        while (current != nullptr)
-        {
-            path.push_back(current);
-
-            current = current->previous();
-
-        }
-    }
-}
-
 // ----------------------------------------------------------------
 //  Name:           breadthFirst
 //  Description:    Performs a depth-first traversal the starting node
@@ -358,16 +265,18 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* node)
     reset();
     clearMarks();
 
+    int count = 1;
+
     for (size_t i = 0; i < m_nodes.size(); i++)
     {
         if (m_nodes[i]->m_data.m_passable)
         {
-            m_nodes[i]->m_data.m_id = -1;
+            m_nodes[i]->m_data.m_name = -1;
             m_nodes[i]->setMarked(false);
         }
         else
         {
-            m_nodes[i]->m_data.m_id = 999;
+            m_nodes[i]->m_data.m_name = 999;
             m_nodes[i]->setMarked(true);
         }
            
@@ -379,6 +288,7 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* node)
         // place the first node on the queue, and mark it.
         nodeQueue.push(node);
         node->setMarked(true);
+        node->m_data.m_name = 0;
         node->m_data.m_id = 0;
 
         // loop through the queue while there are nodes in it.
@@ -393,9 +303,12 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* node)
             {
                 if ((*iter).node()->marked() == false)
                 {
-                    (*iter).node()->m_data.m_id = nodeQueue.front()->m_data.m_id + 1;
+                    (*iter).node()->m_data.m_name = nodeQueue.front()->m_data.m_name + 1;
+                    (*iter).node()->m_data.m_id = count;
                     (*iter).node()->setMarked(true);
                     nodeQueue.push((*iter).node());
+
+                    count++;
                 }
             }
             // dequeue the current node.
@@ -406,7 +319,7 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* node)
 
 // ----------------------------------------------------------------
 //  Name:           iteration
-//  Description:    Using existing id data, get a path to the goal from the start
+//  Description:    Using existing data, get a path to the goal from the start
 //  Arguments:      The first parameter is the starting node
 //                  The second parameter is the goal
 //                  The third parameter is the final path.
@@ -415,65 +328,52 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* node)
 template<class NodeType, class ArcType>
 void Graph<NodeType, ArcType>::iteration(Node* start, Node* goal, std::vector<int>& path)
 {
-    clearMarks();
-
-    for (size_t i = 0; i < m_nodes.size(); i++)
-    {
-        if (!m_nodes[i]->m_data.m_passable)
-        {
-            m_nodes[i]->m_data.m_id = 999;
-            m_nodes[i]->setMarked(true);
-        }
-
-    }
-
-
-    for (Node* node : m_nodes)
-    {
-        // calculate distance to goal node from every node
-        if(node->m_data.m_passable)
-            node->m_data.m_distance = sqrt(pow(goal->m_data.m_x - node->m_data.m_x, 2) + pow(goal->m_data.m_y - node->m_data.m_y, 2));
-
-    }
-
     if (nullptr != start && nullptr != goal)
-    {
+    { // only do this function if both nodes exist
+        clearMarks();
+        path.clear();
+
+        bool goalReached = false;
+
+        for (Node* node : m_nodes)
+        {
+            // calculate distance to goal node from every node
+            if(node->m_data.m_passable)
+                node->m_data.m_distance = sqrt(pow(goal->m_data.m_x - node->m_data.m_x, 2) + pow(goal->m_data.m_y - node->m_data.m_y, 2));
+        }
+    
         std::queue<Node*> nodeQueue;
         // place the first node on the queue, and mark it.
         nodeQueue.push(start);
-        path.push_back(start->m_data.m_id);
+        start->setMarked(true);
 
         // loop through the queue while there are nodes in it.
-        while (nodeQueue.size() != 0)
+        while (nodeQueue.size() != 0 && goalReached == false)
         {
-            // add all of the child nodes that have not been 
-            // marked into the queue
             auto iter = nodeQueue.front()->arcList().begin();
             auto endIter = nodeQueue.front()->arcList().end();
-
             for (; iter != endIter; iter++)
             {
                 if ((*iter).node()->marked() == false)
                 {
-                    if ((*iter).node()->m_data.m_id + (*iter).node()->m_data.m_distance
-                        < nodeQueue.front()->m_data.m_id + nodeQueue.front()->m_data.m_distance)
-                    { // always move towards the next smallest
-                        path.push_back((*iter).node()->m_data.m_id);
-                        nodeQueue.push((*iter).node());
+                    if ((*iter).node()->m_data.m_distance < nodeQueue.front()->m_data.m_distance)
+                    {
+                        (*iter).node()->setPrevious(nodeQueue.front());
                         (*iter).node()->setMarked(true);
+                        nodeQueue.push((*iter).node());
                     }
                 }
-
-                
             }
-            // dequeue the current node.
             nodeQueue.pop();
+        }
 
-            if (nodeQueue.front() == goal) // if the goal is the front of the queue, don't need to go further
-            {
-                break;
-            }
-                
+        Node* current = goal;
+        while (current != nullptr)
+        {
+            path.push_back(current->m_data.m_id);
+
+            current = current->previous();
+
         }
     }
 }

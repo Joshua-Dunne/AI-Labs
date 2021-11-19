@@ -11,7 +11,7 @@ class NodeComparerTwo
 public:
 	bool operator() (GraphNode<NodeType, ArcType>* first, GraphNode<NodeType, ArcType>* second)
 	{
-		return first->m_data.m_id + first->m_data.m_distance > second->m_data.m_id + second->m_data.m_distance;
+		return first->m_data.m_cost + first->m_data.m_distance > second->m_data.m_cost + second->m_data.m_distance;
 	}
 
 };
