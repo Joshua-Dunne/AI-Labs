@@ -53,28 +53,17 @@ void CellGenerator::generateArcs()
 				// Check the bounds:
 				if (n_row >= 0 && n_row < c_MAX_Y && n_col >= 0 && n_col < c_MAX_X) {
 
-
-					/*
-					Calculating the cost:
-					Since each node is 16x16 (size of our walls), the cost will be 32 if it's next to the node.
-					The cost will be the square root of the combined sizes, which is sqrt(32).
-					This is because if we take the values to be 1,
-					Each node that is next to our first node will have a cost of 1,
-					where as each diagonal will have a cost of sqrt(1+1).
-					So we will have the nodes next to have 32, and diagonal be sqrt(16 + 16).
-					*/
-
-					int cost;
+					float cost;
 
 					// 0,2,6,8 are Diagonal, so we need to apply the correct cost
 					if (direction == 0 || direction % 2 == 0)
 					{
-						cost = static_cast<int>(sqrt(32));
+						cost = sqrt(2);
 						m_graph.addArc(m_data[row][col]->m_name, m_data[n_row][n_col]->m_name, cost);
 					}
 					else // 1,3,5,7 are next to the node, so give them the correct cost
 					{
-						cost = 16;
+						cost = 1.0f;
 						m_graph.addArc(m_data[row][col]->m_name, m_data[n_row][n_col]->m_name, cost);
 					}
 				}

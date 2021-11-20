@@ -81,6 +81,7 @@ void Game::processInput()
 							{
 								finished = true;
 								cellGen.setStart(cellCount);
+								cellGen.resetData();
 								break;
 							}
 						}
