@@ -1,6 +1,6 @@
 #include "../include/Game.h"
 
-Game::Game() :	m_window(sf::VideoMode(800u, 800u), "Lab6")
+Game::Game() :	m_window(sf::VideoMode(1200u, 800u), "Lab6")
 {
 	//m_window.setFramerateLimit(60u);
 	cellGen.populateData();
@@ -10,6 +10,13 @@ Game::Game() :	m_window(sf::VideoMode(800u, 800u), "Lab6")
 	num.setFont(font);
 	num.setCharacterSize(12u);
 	num.setFillColor(sf::Color::White);
+
+	instructions.setFont(font);
+	instructions.setCharacterSize(20u);
+	instructions.setFillColor(sf::Color::White);
+	instructions.setPosition(sf::Vector2f{ 805.0f, 100.0f });
+
+	instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: OFF\n\nLeft Click: Set Start\nRight Click: SetGoal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
 	
 }
 
@@ -55,9 +62,23 @@ void Game::processInput()
 
 		if (event.type == sf::Event::KeyPressed)
 		{
-			if (event.key.code == sf::Keyboard::N)
+			if (event.key.code == sf::Keyboard::B)
 			{
 				toggleNumbers = !toggleNumbers;
+			}
+			if (event.key.code == sf::Keyboard::N)
+			{
+				toggleVectors = !toggleVectors;
+			}
+			if (event.key.code == sf::Keyboard::M)
+			{
+				placingMovers = !placingMovers;
+
+				if(placingMovers)
+					instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: ON\n\nLeft Click: Set Start\nRight Click: SetGoal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
+				else if (!placingMovers)
+					instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: OFF\n\nLeft Click: Set Start\nRight Click: SetGoal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
+
 			}
 		}
 
@@ -127,7 +148,7 @@ void Game::processInput()
 				}
 			}
 
-			if (event.mouseButton.button == sf::Mouse::Middle)
+			if (event.mouseButton.button == sf::Mouse::Middle && !placingMovers)
 			{
 				int cellCount = 0;
 				bool finished = false;
@@ -160,13 +181,77 @@ void Game::processInput()
 						break;
 				}
 			}
+
+			if (event.mouseButton.button == sf::Mouse::Middle && placingMovers)
+			{
+				int cellCount = 0;
+				bool finished = false;
+
+				for (int yPos = 0; yPos < 50; yPos++)
+				{
+					for (int xPos = 0; xPos < 50; xPos++)
+					{
+						if (event.mouseButton.x >= cellGen.m_data[yPos][xPos]->m_x
+							&& event.mouseButton.x <= cellGen.m_data[yPos][xPos]->m_x + cellGen.m_cellSize)
+						{
+							if (event.mouseButton.y >= cellGen.m_data[yPos][xPos]->m_y
+								&& event.mouseButton.y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
+							{
+								m_movers.push_back(new NPC(sf::Mouse::getPosition(m_window)));
+								// pass the heading of the current cell to the new mover
+								// since we just added the mover, it'll be the one at the end of the list
+								finished = true;
+								break;
+							}
+						}
+
+						cellCount++;
+					}
+
+					if (finished)
+						break;
+				}
+			}
 		}
 	}
 }
 
 void Game::update(sf::Time& dt)
 {
+	int cellCount = 0;
+	bool finished = false;
+
 	// Update elements
+	for (auto mover : m_movers)
+	{
+		for (int yPos = 0; yPos < 50; yPos++)
+		{
+			for (int xPos = 0; xPos < 50; xPos++)
+			{
+				if (mover->m_body.getPosition().x >= cellGen.m_data[yPos][xPos]->m_x
+					&& mover->m_body.getPosition().x <= cellGen.m_data[yPos][xPos]->m_x + cellGen.m_cellSize)
+				{
+					if (mover->m_body.getPosition().y >= cellGen.m_data[yPos][xPos]->m_y
+						&& mover->m_body.getPosition().y <= cellGen.m_data[yPos][xPos]->m_y + cellGen.m_cellSize)
+					{
+						mover->setHeading(cellGen.m_graph.nodeIndex(cellCount)->m_data.m_dir);
+						finished = true;
+						break;
+					}
+				}
+
+				cellCount++;
+			}
+
+			if (finished)
+				break;
+		}
+
+		mover->update(dt);
+
+		finished = false;
+		cellCount = 0;
+	}
 }
 
 void Game::render()
@@ -219,9 +304,13 @@ void Game::render()
 
 			cellCount++;
 
-			// now we will setup the flow field lines for each node
-			lines.append(sf::Vertex(node.getPosition(), sf::Color::Black));
-			lines.append(sf::Vertex(node.getPosition() + cellGen.m_data[yPos][xPos]->m_dir * 16.0f, sf::Color::White));
+			if (toggleVectors)
+			{
+				// now we will setup the flow field lines for each node
+				lines.append(sf::Vertex(node.getPosition(), sf::Color::Black));
+				lines.append(sf::Vertex(node.getPosition() + cellGen.m_data[yPos][xPos]->m_dir * 16.0f, sf::Color::White));
+			}
+			
 
 			m_window.draw(node);
 			m_window.draw(num);
@@ -230,6 +319,13 @@ void Game::render()
 			lines.clear();
 		}
 	}
+
+	for (auto mover : m_movers)
+	{
+		mover->render(m_window);
+	}
+
+	m_window.draw(instructions);
 
 	m_window.display();
 }

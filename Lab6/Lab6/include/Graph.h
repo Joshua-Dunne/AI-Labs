@@ -413,6 +413,8 @@ inline void Graph<NodeType, ArcType>::flowField()
 
         for (; iter != endIter; iter++)
         {
+            if (m_nodes[i]->m_data.m_name == 0)
+                break;
             // we need to decide which node is the best to set a vector towards
                 // this will be the node that moves us closer to the goal,
                 // but it also can't be any unpassable nodes
@@ -429,20 +431,30 @@ inline void Graph<NodeType, ArcType>::flowField()
             }
         }
 
-        // after doing this, we should have the best node to create our vector for
-        // first, we need to get the distance between our current node,
-        // and the best node it found
-        float length = sqrt(pow(best->m_data.m_x - m_nodes[i]->m_data.m_x, 2)
-            + pow(best->m_data.m_y - m_nodes[i]->m_data.m_y, 2));
+        // if the node we're trying to calculate a vector for is the goal,
+        // don't calculate one, as we want the vector for the goal to be nothing
+        if (m_nodes[i]->m_data.m_name != 0)
+        {
+            // after doing this, we should have the best node to create our vector for
+            // first, we need to get the distance between our current node,
+            // and the best node it found
+            float length = sqrt(pow(best->m_data.m_x - m_nodes[i]->m_data.m_x, 2)
+                + pow(best->m_data.m_y - m_nodes[i]->m_data.m_y, 2));
 
-        // now that we have the length, 
-        // we will create a vector which is
-        // a directional vector between both points
-        sf::Vector2f dir = sf::Vector2f{ static_cast<float>(best->m_data.m_x), static_cast<float>(best->m_data.m_y) } 
-        - sf::Vector2f{ static_cast<float>(m_nodes[i]->m_data.m_x), static_cast<float>(m_nodes[i]->m_data.m_y) };
+            // now that we have the length, 
+            // we will create a vector which is
+            // a directional vector between both points
+            sf::Vector2f dir = sf::Vector2f{ static_cast<float>(best->m_data.m_x), static_cast<float>(best->m_data.m_y) }
+            - sf::Vector2f{ static_cast<float>(m_nodes[i]->m_data.m_x), static_cast<float>(m_nodes[i]->m_data.m_y) };
 
-        // finally, divide the vector by the length to normalize it
-        m_nodes[i]->m_data.m_dir = dir / length;
+            // finally, divide the vector by the length to normalize it
+            m_nodes[i]->m_data.m_dir = dir / length;
+        }
+        else
+        {
+            m_nodes[i]->m_data.m_dir = sf::Vector2f{ 0.0f, 0.0f };
+        }
+        
     }
 }
 
