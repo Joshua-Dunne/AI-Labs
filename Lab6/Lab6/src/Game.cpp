@@ -16,7 +16,7 @@ Game::Game() :	m_window(sf::VideoMode(1200u, 800u), "Lab6")
 	instructions.setFillColor(sf::Color::White);
 	instructions.setPosition(sf::Vector2f{ 805.0f, 100.0f });
 
-	instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: OFF\n\nLeft Click: Set Start\nRight Click: SetGoal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
+	instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: OFF\n\nLeft Click: Set Start\nRight Click: Set Goal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
 	
 }
 
@@ -75,9 +75,9 @@ void Game::processInput()
 				placingMovers = !placingMovers;
 
 				if(placingMovers)
-					instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: ON\n\nLeft Click: Set Start\nRight Click: SetGoal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
+					instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: ON\n\nLeft Click: Set Start\nRight Click: Set Goal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
 				else if (!placingMovers)
-					instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: OFF\n\nLeft Click: Set Start\nRight Click: SetGoal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
+					instructions.setString("Integration Cost / Flow Field\nImplementation\n\nPress B to toggle Numbers.\nPress N to toggle Vectors.\nPress M to toggle placing Movers.\nPlacing Movers: OFF\n\nLeft Click: Set Start\nRight Click: Set Goal\nMiddle Click:\n(Placing Movers OFF): Toggle Unpassable\n(Placing Movers ON): Place Mover");
 
 			}
 		}
