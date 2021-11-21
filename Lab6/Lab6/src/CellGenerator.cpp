@@ -104,4 +104,17 @@ void CellGenerator::resetData()
 	}
 
 	m_graph.iteration(m_graph.nodeIndex(m_start), m_graph.nodeIndex(m_goal), path);
+
+	currCell = 0;
+
+	m_graph.flowField();
+
+	for (int yPos = 0; yPos < c_MAX_Y; yPos++)
+	{
+		for (int xPos = 0; xPos < c_MAX_X; xPos++)
+		{
+			m_data[yPos][xPos]->m_dir = m_graph.nodeIndex(currCell)->m_data.m_dir;
+			currCell++;
+		}
+	}
 }

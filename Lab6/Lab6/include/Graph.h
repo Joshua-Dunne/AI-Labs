@@ -43,6 +43,7 @@ public:
     void clearMarks();
     void breadthFirst(Node* goal);
     void iteration(Node* start, Node* goal, std::vector<int>& path);
+    void flowField();
     void reset();
 private:
 
@@ -271,7 +272,8 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* goal)
         if (m_nodes[i]->m_data.m_passable)
         {
             m_nodes[i]->m_data.m_name = -1;
-            m_nodes[i]->m_data.m_cost = 100;
+            m_nodes[i]->m_data.m_distance = sqrt(pow(goal->m_data.m_x - m_nodes[i]->m_data.m_x, 2)
+                + pow(goal->m_data.m_y - m_nodes[i]->m_data.m_y, 2));
             m_nodes[i]->setMarked(false);
         }
         else
@@ -306,7 +308,7 @@ void Graph<NodeType, ArcType>::breadthFirst(Node* goal)
                 if ((*iter).node()->marked() == false)
                 {  
                     (*iter).node()->m_data.m_name = nodeQueue.front()->m_data.m_name + 1;
-                    (*iter).node()->m_data.m_cost = nodeQueue.front()->m_data.m_cost + (*iter).weight();
+                    (*iter).node()->m_data.m_cost = (nodeQueue.front()->m_data.m_name + 1) + nodeQueue.front()->m_data.m_distance;
                     (*iter).node()->m_data.m_id = count;
                     (*iter).node()->setMarked(true);
                     nodeQueue.push((*iter).node());
@@ -335,9 +337,6 @@ void Graph<NodeType, ArcType>::iteration(Node* start, Node* goal, std::vector<in
 
     for (size_t i = 0; i < m_nodes.size(); i++)
     {
-        m_nodes[i]->m_data.m_distance = sqrt(pow(goal->m_data.m_x - m_nodes[i]->m_data.m_x, 2) 
-            + pow(goal->m_data.m_y - m_nodes[i]->m_data.m_y, 2));
-        m_nodes[i]->m_data.m_distance *= 1000;
         if (!m_nodes[i]->m_data.m_passable)
         { // don't bother processing unpassable nodes
             m_nodes[i]->setMarked(true);
@@ -357,6 +356,7 @@ void Graph<NodeType, ArcType>::iteration(Node* start, Node* goal, std::vector<in
         goal->m_data.m_cost = 0;
         goal->m_data.m_distance = 0;
         goal->m_data.m_id = 0;
+        //goal->setMarked(true);
 
         nodeQueue.push(start);
 
@@ -372,23 +372,11 @@ void Graph<NodeType, ArcType>::iteration(Node* start, Node* goal, std::vector<in
             {
                 if ((*iter).node()->marked() == false)
                 { // cost is calculated cost + arc weight
-                    if ((*iter).node()->m_data.m_distance == 0)
-                    {
-                        std::cout << "goal" << std::endl;
-                    }
-
-                    if ((*iter).node()->m_data.m_distance + (*iter).node()->m_data.m_cost
-                        < nodeQueue.front()->m_data.m_distance + nodeQueue.front()->m_data.m_cost)
+                    if ((*iter).node()->m_data.m_cost < nodeQueue.front()->m_data.m_cost)
                     {
                         (*iter).node()->setPrevious(nodeQueue.front());
                         (*iter).node()->setMarked(true);
                         nodeQueue.push((*iter).node());
-
-                        if ((*iter).node() == goal)
-                        {
-                            goalReached = true;
-                            break;
-                        }
                     }
                 }
             }
@@ -396,21 +384,65 @@ void Graph<NodeType, ArcType>::iteration(Node* start, Node* goal, std::vector<in
             nodeQueue.pop();
         }
 
-        if (nodeQueue.size() > 0)
+        Node* current = goal;
+
+        while (current != nullptr)
         {
-            Node* current = nodeQueue.front();
+            path.push_back(current->m_data.m_id);
 
-            while (current != nullptr)
-            {
-                path.push_back(current->m_data.m_id);
+            current = current->previous();
+        }
+    }
+}
 
-                current = current->previous();
+template<class NodeType, class ArcType>
+inline void Graph<NodeType, ArcType>::flowField()
+{
+  
+    // loop through the queue while there are nodes in it.
+    for(size_t i = 0; i < m_nodes.size(); i++)
+    {
+        // add all of the child nodes that have not been 
+        // marked into the queue
+        auto iter = m_nodes[i]->arcList().begin();
+        auto endIter = m_nodes[i]->arcList().end();
+
+        Node* best = (*m_nodes[i]->arcList().begin()).node();
+        iter++; // take the node on top of the queue as a start
+        // and increase the iterator
+
+        for (; iter != endIter; iter++)
+        {
+            // we need to decide which node is the best to set a vector towards
+                // this will be the node that moves us closer to the goal,
+                // but it also can't be any unpassable nodes
+                // so we will check for whether the node can be passed or not during
+                // if an unpassable node blocks the route to the goal,
+                // we'll instead take the next best node with the smallest distance
+            if ((*iter).node()->m_data.m_passable)
+            { // only filter passable nodes
+                if ((*iter).node()->m_data.m_distance < best->m_data.m_distance)
+                { // we'll have calculated the distance to the goal previously
+                    best = (*iter).node();
+                    // save this node for later
+                }
             }
         }
-        else
-        {
-            std::cout << "node queue is empty!" << std::endl;
-        }
+
+        // after doing this, we should have the best node to create our vector for
+        // first, we need to get the distance between our current node,
+        // and the best node it found
+        float length = sqrt(pow(best->m_data.m_x - m_nodes[i]->m_data.m_x, 2)
+            + pow(best->m_data.m_y - m_nodes[i]->m_data.m_y, 2));
+
+        // now that we have the length, 
+        // we will create a vector which is
+        // a directional vector between both points
+        sf::Vector2f dir = sf::Vector2f{ static_cast<float>(best->m_data.m_x), static_cast<float>(best->m_data.m_y) } 
+        - sf::Vector2f{ static_cast<float>(m_nodes[i]->m_data.m_x), static_cast<float>(m_nodes[i]->m_data.m_y) };
+
+        // finally, divide the vector by the length to normalize it
+        m_nodes[i]->m_data.m_dir = dir / length;
     }
 }
 

@@ -146,7 +146,7 @@ void Game::processInput()
 								{ // only allow something to be set as unpassable if it isn't the start or the goal
 									finished = true;
 									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_passable = !cellGen.m_graph.nodeIndex(cellCount)->m_data.m_passable;
-									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_name;
+									cellGen.m_graph.nodeIndex(cellCount)->m_data.m_name = 999;
 									cellGen.resetData();
 									break;
 								}	
@@ -174,6 +174,7 @@ void Game::render()
 	m_window.clear(sf::Color::Black);
 
 	// Draw elements
+	sf::VertexArray lines(sf::Lines, 2);
 
 	sf::RectangleShape node;
 	node.setSize(sf::Vector2f{ static_cast<float>(cellGen.m_cellSize), static_cast<float>(cellGen.m_cellSize) });
@@ -194,15 +195,6 @@ void Game::render()
 
 			node.setFillColor(sf::Color::Blue);			
 
-			// now that the color has been set, we'll change the transparency based on the ID
-			if (cellCount != cellGen.m_start && cellCount != cellGen.m_goal)
-			{// don't change transparency if it's the start of end
-				if (cellGen.m_data[yPos][xPos]->m_passable)
-					node.setFillColor(node.getFillColor() - sf::Color::Color(0, 0, 0, cellGen.m_data[yPos][xPos]->m_name * 5));
-				else
-					node.setFillColor(sf::Color::Black);
-			}
-			
 			for (size_t pathIt = 0; pathIt < cellGen.path.size(); pathIt++)
 			{
 				if (cellGen.path[pathIt] == cellGen.m_data[yPos][xPos]->m_id)
@@ -216,10 +208,26 @@ void Game::render()
 			else if (cellCount == cellGen.m_goal)
 				node.setFillColor(sf::Color::Green);
 
+			// now that the color has been set, we'll change the transparency based on the ID
+			if (cellCount != cellGen.m_start && cellCount != cellGen.m_goal)
+			{// don't change transparency if it's the start of end
+				if (cellGen.m_data[yPos][xPos]->m_passable)
+					node.setFillColor(node.getFillColor() - sf::Color::Color(0, 0, 0, cellGen.m_data[yPos][xPos]->m_name * 5));
+				else
+					node.setFillColor(sf::Color::Black);
+			}
+
 			cellCount++;
+
+			// now we will setup the flow field lines for each node
+			lines.append(sf::Vertex(node.getPosition(), sf::Color::Black));
+			lines.append(sf::Vertex(node.getPosition() + cellGen.m_data[yPos][xPos]->m_dir * 16.0f, sf::Color::White));
 
 			m_window.draw(node);
 			m_window.draw(num);
+			m_window.draw(lines);
+
+			lines.clear();
 		}
 	}
 
