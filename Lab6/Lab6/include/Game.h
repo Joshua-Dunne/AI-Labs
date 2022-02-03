@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "CellGenerator.h"
+#include "NPC.h"
 
 class Game
 {
@@ -24,7 +25,13 @@ public:
 
 	sf::Font font;
 	sf::Text num;
+	sf::Text instructions;
+
 	bool toggleNumbers = false;
+	bool toggleVectors = false;
+	bool placingMovers = false;
+
+	std::vector<NPC*> m_movers;
 };
 
 #endif

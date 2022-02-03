@@ -11,8 +11,10 @@ struct NodeData
 {
 	int m_name;
 	int m_id;
+	int m_cost;
 	int m_x;
 	int m_y;
+	float m_distance;
 	sf::Vector2f m_dir;
 	bool m_passable = true;
 };

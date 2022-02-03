@@ -22,6 +22,7 @@
     <ClCompile Include="src\CellGenerator.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\NPC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CellGenerator.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="include\NodeComparer.h" />
     <ClInclude Include="include\NodeComparerTwo.h" />
     <ClInclude Include="include\NodeData.h" />
+    <ClInclude Include="include\NPC.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
