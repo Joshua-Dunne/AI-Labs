@@ -49,7 +49,7 @@ void Bird::update(Pillar pillar)
 	{
 		if (jump)
 		{
-			y -= 20;	// Flap!
+			y -= 10;	// Flap!
 //			playerJump = false;
 		}
 	}
@@ -62,20 +62,20 @@ void Bird::update(Pillar pillar)
 	{
 		fitness = score;	// Record how long it lived.
 		alive = false;
-		score = 0.0;
+		//score = 0.0;
 	}
 	// If the bird hits the upcoming pillar.
 	if (pillar.lowerRectangle.getGlobalBounds().intersects(this->rectangle.getGlobalBounds()))
 	{
 		fitness = score;
 		alive = false;
-		score = 0.0;
+		//score = 0.0;
 	}
 	if (pillar.upperRectangle.getGlobalBounds().intersects(this->rectangle.getGlobalBounds()))
 	{
 		fitness = score;
 		alive = false;
-		score = 0.0;
+		//score = 0.0;
 	}
 } 
 

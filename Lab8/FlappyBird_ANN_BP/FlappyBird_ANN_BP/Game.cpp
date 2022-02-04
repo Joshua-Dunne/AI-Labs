@@ -202,10 +202,6 @@ void Game::loop()
 				{
 					m_exitGame = true;
 				}
-				if ((sf::Keyboard::Space == event.key.code) && (player))
-				{
-					population.birdSet[0].jump = true;
-				}
 				if (sf::Keyboard::S == event.key.code)
 				{
 					showBirdStats = !showBirdStats;
@@ -304,6 +300,15 @@ void Game::update(float dt)
 		m_window.close();
 	}
 
+	if (player)
+	{
+		float hole = pillarSet[index].lowerY - pillarSet[index].upperH;
+		float center = pillarSet[index].upperH + hole / 2.0f;
+
+		if (population.birdSet[0].y > center)
+			population.birdSet[0].jump = true;
+	}
+
 	for (int i = 0; i < pillarCount; i++)
 	{
 		pillarSet[i].update(dt, pillarSet);
@@ -311,12 +316,12 @@ void Game::update(float dt)
 	}
 	int birdsAlive = 0;
 	birdsAlive = population.update(pillarSet[index]);
-	if (birdsAlive == 0)
+	/*if (birdsAlive == 0)
 	{
 		if (player || ai)
 			m_exitGame = true;
-	}
-	else if (capture)	// Capture training data.
+	}*/
+	if (capture)	// Capture training data.
 	{
 		string tempString = "";
 
@@ -327,13 +332,20 @@ void Game::update(float dt)
 				tempString = to_string(pillarSet[index].x) + "," + to_string(pillarSet[index].upperH) + "," + to_string(pillarSet[index].lowerY);
 				tempString = tempString + "," + to_string(population.birdSet[b].x) + "," + to_string(population.birdSet[b].y);
 
-				std::cout << tempString << std::endl;
+				//std::cout << tempString << std::endl;
 
 				myTrainingfile << tempString;
 				if (population.birdSet[b].jump)
-					myTrainingfile << ",flap\n";
+				{
+					myTrainingfile << ",flap\n"; 
+					std::cout << "flap" << std::endl;
+				}
 				else
+				{
 					myTrainingfile << ",glide\n";
+					std::cout << "glide" << std::endl;
+				}
+					
 			}
 		}
 	}
@@ -345,11 +357,13 @@ void Game::update(float dt)
 		tempString = tempString + (population.birdSet[0].jump ? ",flap" : ",glide");
 		std::cout << tempString << std::endl;
 
+
+
 	}
+
 	// So for the case where player has pressed space and we have captured it for training we must reset the flag.
 	if (player)
 		population.birdSet[0].jump = false;
-
 }
 
 /// <summary>
@@ -407,7 +421,7 @@ void Game::draw()
 		}
 		else
 		{
-			text.setString("Bird " + std::to_string(i + 1) + " -DEAD-");
+			text.setString("Bird " + std::to_string(i + 1) + " Fitness: " + std::to_string(population.birdSet[i].score));
 		}
 		text.setFillColor(population.birdSet[i].colour);
 		text.setPosition(sf::Vector2f(10, 150 + i * 30));
