@@ -19,13 +19,13 @@ public:
 	static const int pillarGap = 600;	// The gap between pillars
 	static const int pillarCount = 5;
 
-	static const bool player = true;	// True if human wants to play. Don't forget to set birdCount=1 below.
-	static const bool ai = false;		// True if we are loading a neural network and the AI plays. Don't forget to set birdCount=1 below.
-
-	static const int birdCount = 1;		// Set to 1 if we are in player mode.
-										// If in AI mode and you set it to more than one 
-										// then all birds will have the same brain type and will start in different vertical positions.
-
+	static const bool learn = false;
+	static const bool player = false;
+	static const bool ai = true;
+	static const int birdCount = 20;
+	// Our population size for learning via the GA is something like 20. Experiment with that number.
+										// Set to 1 if we are in player mode or just loading the GA Brain.
+										// If AI is true and this is > 1 then each AI bird gets randomly assigned a GA or Tensorflow trained brain.
 	bool capture = false;
 	bool render = true;
 	std::ofstream myTrainingfile;
@@ -42,7 +42,11 @@ public:
 	//function ran when the game starts
 	void init();
 	//Load the trained neural network from file
+	void loadGABrain(int bird);
+	//Load the trained neural network from file
 	void loadTFBrain(int bird);
+	//train the neural network
+	void trainBrain();
 	//the game loop method
 	void loop();
 	//update game logic
@@ -67,7 +71,7 @@ private:
 	Pillar pillarSet[pillarCount];
 	int index = 0; //The pillar the bird is approaching.
 
-	Population population;
+	Population population; //For the Genetic Algorithm.
 
 
 };
